@@ -30,7 +30,7 @@
               :key="index"
               @click="toRoute(item.path)"
             >
-              <v-icon name="fa-address-card-o"></v-icon>
+              <v-icon :name="item.meta.icon"></v-icon>
               <span slot="title" style="margin-left: 8px">{{
                 item.meta | hasVal("title")
               }}</span>
@@ -38,7 +38,6 @@
           </template>
         </el-menu>
       </el-aside>
-
       <el-main style="height: 100%">
         <el-scrollbar style="height: 100%" ref="scrollbar">
           <router-view></router-view>

@@ -20,16 +20,120 @@ export const routes = [
       hidden: true,
     },
     component: () =>
-      import(/* webpackChunkName: "login" */ "../views/login/index.vue"),
+      import("../views/login/index.vue"),
   },
   {
     path: "/userManager",
     component: Main,
     name: "userManager",
+    redirect: "/userManager/",
     meta: {
       title: "用户管理",
-      icon: "fa-address-book"
+      icon: "user-cog"
     },
+    children: [
+      {
+        path: "/",
+        component: () =>
+          import("../views/userManager/index.vue"),
+      },
+    ],
+  },
+  {
+    path: "/articleManager",
+    component: Main,
+    name: "articleManager",
+    meta: {
+      title: "文章管理",
+      icon: "file-alt"
+    },
+    children: [
+      {
+        path: "/",
+        component: () =>
+          import("../views/articleManager/index.vue"),
+      },
+    ],
+  },
+  {
+    path: "/giftManager",
+    component: Main,
+    name: "giftManager",
+    meta: {
+      title: "礼包管理",
+      icon: "gift"
+    },
+    children: [
+      {
+        path: "/",
+        component: () =>
+          import("../views/giftManager/index.vue"),
+      },
+    ],
+  },
+  {
+    path: "/sliceShowManager",
+    component: Main,
+    name: "sliceShowManager",
+    meta: {
+      title: "轮播图管理",
+      icon: "image"
+    },
+    children: [
+      {
+        path: "/",
+        component: () =>
+          import("../views/sliceShowManager/index.vue"),
+      },
+    ],
+  },
+  {
+    path: "/messageManager",
+    component: Main,
+    name: "messageManager",
+    meta: {
+      title: "留言管理",
+      icon: "comment-dots"
+    },
+    children: [
+      {
+        path: "/",
+        component: () =>
+          import("../views/messageManager/index.vue"),
+      },
+    ],
+  },
+  {
+    path: "/logsManager",
+    component: Main,
+    name: "logsManager",
+    meta: {
+      title: "日志管理",
+      icon: "stream"
+    },
+    children: [
+      {
+        path: "/",
+        component: () =>
+          import("../views/logsManager/index.vue"),
+      },
+    ],
+  },
+  {
+    path: "/staticManager",
+    component: Main,
+    name: "staticManager",
+    meta: {
+      title: "静态化管理",
+      icon: "thumbtack"
+    },
+    children: [
+      {
+        path: "/",
+        component: () =>
+          import("../views/staticManager/index.vue"),
+      },
+    ],
   },
 ];
 
