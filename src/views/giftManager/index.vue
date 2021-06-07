@@ -1,7 +1,13 @@
 <template>
   <div>
     <el-row>
-      <el-button type="primary" plain style="float: right">添加</el-button>
+      <el-button
+        type="primary"
+        plain
+        style="float: right"
+        @click="addBox = true"
+        >添加</el-button
+      >
     </el-row>
     <el-table
       :data="tableData"
@@ -51,6 +57,61 @@
       >
       </el-pagination>
     </el-row>
+    <div class="addBox" v-if="addBox">
+      <button class="closeBtn" @click="addBox = false">
+        <v-icon name="times"></v-icon>
+      </button>
+      <p style="margin: 10px; color: #409eff">添加礼包</p>
+      <div gutter="15" class="mt20 inputItem">
+        <span>礼包简述</span>
+        <el-input
+          class="ml20"
+          style="width: 75%"
+          type="textarea"
+          placeholder="请输入礼包内容简述"
+          v-model="form.giftBrief"
+          clearable
+        >
+        </el-input>
+      </div>
+      <div
+        class="inputItem"
+        style="height: 80px; line-height: 80px; padding: 20px 25px 0 25px"
+      >
+        <span style="dispaly: inline-block; transform: translateY(-40px)"
+          >礼包图片</span
+        >
+        <el-upload
+          class="avatar-uploader ml20"
+          style="display: inline-block"
+          action="https://jsonplaceholder.typicode.com/posts/"
+          :show-file-list="false"
+          :on-success="handleAvatarSuccess"
+        >
+          <img v-if="form.imgUrl" :src="form.imgUrl" class="avatar" />
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
+      </div>
+      <div class="inputItem">
+        <span>发布状态</span>
+        <el-switch class="ml20" v-model="form.staticSwitch"></el-switch>
+      </div>
+      <el-row gutter="40" class="mt20">
+        <el-col span="4" offset="3">
+          <el-button type="primary" style="float: right">提交</el-button>
+        </el-col>
+        <el-col span="4">
+          <el-button type="danger" plain @click="cancelEdit">退出</el-button>
+        </el-col>
+      </el-row>
+    </div>
+    <el-dialog title="提示" :visible.sync="dialogVisible" width="350px">
+      <span>{{ dialogMsg }}</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -62,6 +123,14 @@ import { Component, Vue } from "vue-property-decorator";
   components: {},
 })
 export default class extends Vue {
+  addBox = false;
+  dialogVisible = false;
+  dialogMsg = "";
+  form = {
+    giftBrief: "",
+    imgSrc: "",
+    staticSwitch: false,
+  };
   tableData = [
     {
       ID: "7777",
@@ -101,3 +170,6 @@ export default class extends Vue {
   ];
 }
 </script>
+<style lang="scss" scoped>
+@import url("../scss/index.scss");
+</style>

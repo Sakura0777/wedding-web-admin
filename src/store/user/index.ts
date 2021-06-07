@@ -22,13 +22,15 @@ class User extends VuexModule implements IUserState {
   }
 
   @Action
-  public async Login(userInfo: { username: string; password: string }) {
-    let { username, password } = userInfo;
-    username = username.trim();
+  public async Login(userInfo: { username: string; password: string; vcode: string }) {
+    let { username, password, vcode } = userInfo;
+    username = username.replace(/s+/g, "");
+    vcode = vcode.replace(/s+/g, "");
     password = Md5.hashStr(password).toString();
     const data = {
       admin_name: username,
       admin_pwd: password,
+      vcode: vcode
     };
     const res: any = await loginApi(data)
       .then((res) => res)

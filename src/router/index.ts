@@ -26,7 +26,6 @@ export const routes = [
     path: "/userManager",
     component: Main,
     name: "userManager",
-    redirect: "/userManager/",
     meta: {
       title: "用户管理",
       icon: "user-cog"

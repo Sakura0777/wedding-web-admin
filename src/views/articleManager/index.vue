@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="overflow: auto">
     <el-row :gutter="20" style="margin-top: 30px">
       <el-col :span="6">
         <el-input
@@ -69,7 +69,9 @@
         <el-button type="text">预览</el-button>
         <el-button type="text" @click="openEditor = true">修改</el-button>
         <el-button type="text">发布</el-button>
-        <el-button type="text" style="color: #e83929">删除</el-button>
+        <el-button type="text" style="color: #e83929" @click="delArticle"
+          >删除</el-button
+        >
       </el-table-column>
     </el-table>
     <el-row type="flex" justify="center" style="margin-top: 15px">
@@ -91,8 +93,8 @@
     <div class="editorBox" v-if="openEditor">
       <p style="margin: 10px; color: #409eff">添加文章</p>
       <el-row gutter="20" class="inputBox">
-        <el-col span="8" :offset="1">
-          <label for="">标题</label>
+        <el-col span="8" offset="1">
+          <label >标题</label>
           <el-input
             style="width: 85%"
             v-model="form.title"
@@ -116,7 +118,7 @@
           </el-select>
         </el-col>
         <el-col span="4">
-          <label for="">封面</label>
+          <label style="dispaly: inline-block; transform: translateY(-40px)">封面</label>
           <el-upload
             class="avatar-uploader"
             style="display: inline-block"
@@ -149,7 +151,7 @@
       <span>{{ dialogMsg }}</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmQuit">确 定</el-button>
+        <el-button type="primary" @click="dialogConfirm">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -244,13 +246,18 @@ export default class extends Vue {
     this.dialogVisible = true;
     this.dialogMsg = "文章尚未保存，是否取消并退出文章编辑。";
   }
-  confirmQuit() {
+  dialogConfirm() {
     this.dialogVisible = false;
     this.openEditor = false;
+  }
+  delArticle() {
+    this.dialogVisible = true;
+    this.dialogMsg = "确认删除该文章吗？";
   }
 }
 </script>
 <style lang="scss" scoped>
+@import url("../scss/index.scss");
 .tips {
   font-size: 14px;
   color: #409eff;
@@ -259,30 +266,7 @@ export default class extends Vue {
     font-size: 16px;
   }
 }
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 80px;
-  height: 80px;
-  line-height: 80px;
-  text-align: center;
-  border: 1px dashed #d9d9d9;
-}
-.avatar {
-  width: 80px;
-  height: 80px;
-  display: block;
-}
+
 .inputBox {
   height: 80px;
   line-height: 80px;
@@ -294,16 +278,16 @@ export default class extends Vue {
 .editorBox {
   position: absolute;
   top: 20px;
-  left: 50px;
   z-index: 99;
   height: 850px;
-  width: 1000px;
+  width: 1100px;
   background: #fff;
   border: 1px solid #409eff;
   border-radius: 15px;
+  box-shadow: 5px 5px 10px #6b9fd3c0;
   .editor {
     margin-top: 20px;
-    margin-left: 25px;
+    margin-left: 50px;
   }
 }
 </style>

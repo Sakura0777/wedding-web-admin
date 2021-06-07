@@ -38,7 +38,7 @@ export default class extends Vue {
     language: "zh_CN", //语言
     content_css: "tinymce/skins/content/default/content.css",
     skin_url: "tinymce/skins/ui/oxide", //skin路径
-    width: 950,
+    width: 1000,
     height: 680, //编辑器高度
     branding: true, //是
     placeholder:'请在这里输入文章内容',

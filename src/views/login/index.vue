@@ -38,11 +38,21 @@
           :placeholder="'请输入密码'"
           name="password"
           autocomplete="on"
-          @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
           <v-icon :name="passwordType === 'password' ? 'eye-slash' : 'eye'" />
         </span>
+      </el-form-item>
+      <el-form-item prop="verifyCode">
+        <span class="svg-container">
+          <v-icon name="image" />
+        </span>
+        <el-input
+          v-model="loginForm.vcode"
+          :placeholder="'请输入图形验证码'"
+          name="verifyCode"
+        />
+        <img :src="vcodeUrl" alt="" class="show-pwd" style="top:2px;right:2px;"/>
       </el-form-item>
 
       <el-button
@@ -83,6 +93,7 @@ export default class extends Vue {
   private loginForm = {
     username: "",
     password: "",
+    vcode: "",
   };
   private loginRules = {
     username: [{ validator: this.validateUsername, trigger: "blur" }],
@@ -94,7 +105,8 @@ export default class extends Vue {
   private redirect?: string;
   private otherQuery: Dictionary<string> = {};
   private vcodeUrl =
-    process.env.VUE_APP_BASE_URL + "verify/getImg?t=" + new Date().getTime();
+    process.env.VUE_APP_BASE_URL + "verify/img?t=" + new Date().getTime();
+  // process.env.VUE_APP_BASE_URL + "verify/getImg?t=" + new Date().getTime();
 
   @Watch("$route", { immediate: true })
   private onRouteChange(route: Route) {
@@ -126,9 +138,9 @@ export default class extends Vue {
     });
   }
 
-  private refreshCode() {
+  private getVerifyCode() {
     this.vcodeUrl =
-      process.env.VUE_APP_BASE_URL + "verify/getImg?t=" + new Date().getTime();
+      process.env.VUE_APP_BASE_URL + "verify/img?t=" + new Date().getTime();
   }
 
   private handleLogin() {
@@ -138,14 +150,14 @@ export default class extends Vue {
         const res = await UserModule.Login(this.loginForm);
         if (res) {
           this.$router.push({
-            path: "/",
+            path: "/userManager",
           });
           // this.$router.push({
           //   path: this.redirect || "/",
           //   query: this.otherQuery
           // });
         } else {
-          this.refreshCode();
+          this.getVerifyCode();
         }
         setTimeout(() => {
           this.loading = false;
