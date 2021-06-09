@@ -1,14 +1,5 @@
 <template>
   <div>
-    <el-alert
-      :title="alertMsg"
-      v-if="showAlert"
-      type="success"
-      center
-      show-icon
-      style="width: 82%"
-    >
-    </el-alert>
     <el-row :gutter="20" style="margin-top: 30px">
       <el-col :span="8">
         <el-input
@@ -56,21 +47,23 @@
       ></el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <!-- <el-button type="text">修改</el-button> -->
+          <el-button type="text" @click="updateUserPsd(scope.row.uid)"
+            >修改密码</el-button
+          >
           <el-button
             type="text"
             style="color: #e83929"
-            @click="mofidyUser(scope.row.uid, 2)"
+            @click="modifyUser(scope.row.uid, 2)"
             >删除</el-button
           >
           <el-button
             type="text"
             style="color: #e83929"
             v-if="scope.row.flag === 0"
-            @click="mofidyUser(scope.row.uid, 1)"
+            @click="modifyUser(scope.row.uid, 1)"
             >禁用</el-button
           >
-          <el-button type="text" v-else @click="mofidyUser(scope.row.uid, 0)"
+          <el-button type="text" v-else @click="modifyUser(scope.row.uid, 0)"
             >启用</el-button
           >
         </template>
@@ -89,7 +82,7 @@
       </el-pagination>
     </el-row>
     <el-dialog
-      width="80%"
+      width="50%"
       title="添加用户"
       :close-on-click-modal="false"
       :visible.sync="dialogFormVisible"
@@ -103,7 +96,7 @@
         label-width="100px"
       >
         <el-form-item label="账号" prop="account">
-          <el-input v-model.number="newUser.account"></el-input>
+          <el-input v-model="newUser.account" placeholder="请输入一个邮箱地址"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="pwd">
           <el-input
@@ -121,11 +114,49 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button @click="clearForm" :disabled="submiting">取消</el-button>
-          <el-button
-            type="primary"
-            :loading="submiting"
-            @click="submitForm('newUser')"
+          <el-button @click="clearForm('newUser')" :disabled="submiting"
+            >取消</el-button
+          >
+          <el-button type="primary" :loading="submiting" @click="submitAdd()"
+            >提交</el-button
+          >
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <el-dialog
+      width="50%"
+      title="修改密码"
+      :close-on-click-modal="false"
+      :visible.sync="dialogFormVisible2"
+      :show-close="!submiting"
+    >
+      <el-form
+        :model="updateUser"
+        status-icon
+        :rules="userRules"
+        ref="updateUser"
+        label-width="100px"
+      >
+        <el-form-item label="密码" prop="pwd">
+          <el-input
+            type="password"
+            v-model="updateUser.pwd"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="pwd_confirm">
+          <el-input
+            type="password"
+            v-model="updateUser.pwd_confirm"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button @click="clearForm('updateUser')" :disabled="submiting"
+            >取消</el-button
+          >
+          <el-button type="primary" :loading="submiting" @click="submitUpdate"
             >提交</el-button
           >
         </el-form-item>
@@ -152,9 +183,8 @@ import {
 export default class extends Vue {
   isLoading: boolean = false;
   submiting:Boolean=false
-  showAlert: Boolean = false;
-  alertMsg: String = "";
   dialogFormVisible:Boolean=false
+  dialogFormVisible2:Boolean=false
   page: any = {
     key: "",
     type: 2,
@@ -169,6 +199,11 @@ export default class extends Vue {
     pwd: "",
     pwd_confirm: "",
   };
+  updateUser:any ={
+    uid:'',
+    pwd:'',
+    pwd_confirm:''
+  }
   userRules: any = {
     ...userRules,
     pwd_confirm: [
@@ -182,14 +217,14 @@ export default class extends Vue {
   timeFormat = timeFormat;
 
   checkPassword(rule: any, value: string, callback: Function) {
-    if (value && value !== this.newUser.pwd) {
+    if (value &&  value !== `${this.dialogFormVisible?this.newUser.pwd:this.updateUser.pwd}` ) {
       callback(new Error("密码与确认密码不一致"));
     } else {
       callback();
     }
   }
-  clearForm(){
-    this.$refs['newUser'].resetFields();
+  clearForm(name:String){
+    this.$refs[name].resetFields();
     this.dialogFormVisible = false
   }
   async getUserList(isFirst?: boolean,isSerach?:Boolean) {
@@ -205,7 +240,11 @@ export default class extends Vue {
     this.tableData = res.data.list;
     this.isLoading = false;
   }
-  mofidyUser(id: number, option: number) {
+  updateUserPsd(id:Number){
+    this.updateUser.uid = id
+    this.dialogFormVisible2 = true
+  }
+  modifyUser(id: number, option: number) {
     let msg = "";
     switch (option) {
       case 0:
@@ -232,23 +271,43 @@ export default class extends Vue {
         let res = await userDeleteApi(params);
         switch (option) {
           case 0:
-            this.alertMsg = "账户启用成功";
+             this.$message.success("账户启用成功");
             break;
           case 1:
-            this.alertMsg = "账户禁用成功";
+            this.$message.success("账户禁用成功");
             break;
           case 2:
-            this.alertMsg = "账户已删除";
+            this.$message.success("账户已删除");
             break;
         }
-        this.showAlert = true;
         this.getUserList(true);
       })
       .catch(() => {
         return;
       });
   }
-  submitForm() {
+  submitUpdate(){
+        (this.$refs["updateUser"] as any).validate((valid: boolean) => {
+      if (valid) {
+        if (this.submiting) return;
+        this.submiting = true;
+        const data: any = Object.assign({}, this.updateUser);
+        data.pwd = Md5.hashStr(data.pwd);
+        data.pwd_confirm = Md5.hashStr(data.pwd_confirm);
+        data.uid = data.uid;
+        userUpdateApi(data)
+          .then(res => {
+            this.$message.success("用户密码修改成功");
+            this.clearForm('updateUser')
+          })
+          .catch(() => {})
+          .finally(() => {
+            this.submiting = false;
+          });
+      }
+    });
+  }
+  submitAdd() {
     (this.$refs["newUser"] as any).validate((valid: boolean) => {
       if (valid) {
         if (this.submiting) return;
@@ -260,7 +319,7 @@ export default class extends Vue {
         userAddApi(data)
           .then(res => {
             this.$message.success("新增用户成功");
-            this.clearForm()
+            this.clearForm('newUser')
             this.getUserList(true);
           })
           .catch(() => {})
