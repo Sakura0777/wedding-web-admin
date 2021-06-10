@@ -65,7 +65,7 @@
         align="center"
       ></el-table-column>
       <el-table-column label="操作" align="center" width="250">
-        <el-button type="text">静态化</el-button>
+        <!-- <el-button type="text">静态化</el-button> -->
         <el-button type="text">预览</el-button>
         <el-button type="text" @click="openEditor = true">修改</el-button>
         <el-button type="text">发布</el-button>

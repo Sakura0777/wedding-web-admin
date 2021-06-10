@@ -18,5 +18,10 @@ export const sliceShowDeleteApi = (data: any) => postFormWithBaseUrl("carousel/d
 export const sliceShowUpdateApi = (data: any) => postFormWithBaseUrl("carousel/update",data);
 export const sliceShowAddApi = (data: any) => postFormWithBaseUrl("carousel/add",data);
 
+export const giftListApi = (data: any) => postFormWithBaseUrl("gift/getList",data);
+export const giftDeleteApi = (data: any) => postFormWithBaseUrl("gift/delete",data);
+export const giftUpdateApi = (data: any) => postFormWithBaseUrl("gift/update",data);
+export const giftAddApi = (data: any) => postFormWithBaseUrl("gift/add",data);
+
 export const imageUploadApi = (data: any) => postFormDataWithBaseUrl("upload/image",data);
-export const videoUploadApi = (data: any) => postFormWithBaseUrl("upload/video",data);
+export const videoUploadApi = (data: any) => postFormDataWithBaseUrl("upload/video",data);

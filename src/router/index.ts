@@ -118,22 +118,22 @@ export const routes = [
       },
     ],
   },
-  {
-    path: "/staticManager",
-    component: Main,
-    name: "staticManager",
-    meta: {
-      title: "静态化管理",
-      icon: "thumbtack"
-    },
-    children: [
-      {
-        path: "/",
-        component: () =>
-          import("../views/staticManager/index.vue"),
-      },
-    ],
-  },
+  // {
+  //   path: "/staticManager",
+  //   component: Main,
+  //   name: "staticManager",
+  //   meta: {
+  //     title: "静态化管理",
+  //     icon: "thumbtack"
+  //   },
+  //   children: [
+  //     {
+  //       path: "/",
+  //       component: () =>
+  //         import("../views/staticManager/index.vue"),
+  //     },
+  //   ],
+  // },
 ];
 
 const router = new VueRouter({

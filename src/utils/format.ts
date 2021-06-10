@@ -41,7 +41,10 @@ export const arr2obj = (list: any[]) => {
   return list.reduce((res, v) => ((res[v.value] = v.label), res), {});
 };
 
-export const picUrlFormat = (url: string) => {
+export const picUrlFormat = (url?: string) => {
+  if (!url) {
+    return;
+  }
   let out = url;
   if (url.indexOf("//") < 0) {
     out = baseImgUrl + url;
@@ -67,8 +70,8 @@ export const toChinesNum = (num: number) => {
         (i == 0 && strArr[i] == 0
           ? ""
           : i > 0 && strArr[i] == 0 && strArr[i - 1] == 0
-          ? ""
-          : changeNum[strArr[i]] + (strArr[i] == 0 ? unit[0] : unit[i])) +
+            ? ""
+            : changeNum[strArr[i]] + (strArr[i] == 0 ? unit[0] : unit[i])) +
         newNum;
     }
     return newNum;
