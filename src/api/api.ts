@@ -23,5 +23,10 @@ export const giftDeleteApi = (data: any) => postFormWithBaseUrl("gift/delete",da
 export const giftUpdateApi = (data: any) => postFormWithBaseUrl("gift/update",data);
 export const giftAddApi = (data: any) => postFormWithBaseUrl("gift/add",data);
 
+export const articleListApi = (data: any) => postFormWithBaseUrl("article/getList",data);
+export const articleDeleteApi = (data: any) => postFormWithBaseUrl("article/delete",data);
+export const articleUpdateApi = (data: any) => postFormWithBaseUrl("article/update",data);
+export const articleAddApi = (data: any) => postFormWithBaseUrl("article/add",data);
+
 export const imageUploadApi = (data: any) => postFormDataWithBaseUrl("upload/image",data);
 export const videoUploadApi = (data: any) => postFormDataWithBaseUrl("upload/video",data);

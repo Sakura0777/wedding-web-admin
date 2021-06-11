@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Prop, Watch, Vue } from "vue-property-decorator";
 import tinymce from "tinymce/tinymce";
 import Editor from "@tinymce/tinymce-vue";
 import "tinymce/icons/default/icons";
@@ -20,7 +20,7 @@ import "tinymce/plugins/wordcount";
 import "tinymce/plugins/colorpicker";
 import "tinymce/plugins/textcolor";
 import "tinymce/plugins/fullscreen";
-import "tinymce/plugins/preview"
+import "tinymce/plugins/preview";
 @Component({
   name: "tinymceEditor",
   components: {
@@ -28,8 +28,10 @@ import "tinymce/plugins/preview"
   },
 })
 export default class extends Vue {
-  value = "";
-  plugins = "preview fullscreen link lists image media table textcolor wordcount contextmenu ";
+  @Prop({ default: "" }) tinymceHtml: String;
+  value = this.tinymceHtml;
+  plugins =
+    "preview fullscreen link lists image media table textcolor wordcount contextmenu ";
   toolbar =
     "undo redo | formatselect bold italic forecolor removeformat |alignleft aligncenter alignright alignjustify | bullist numlist outdent indent  |table image media  link|  preview fullscreen";
   init = {
@@ -41,32 +43,40 @@ export default class extends Vue {
     width: 1000,
     height: 680, //编辑器高度
     branding: true, //是
-    placeholder:'请在这里输入文章内容',
+    placeholder: "请在这里输入文章内容",
     toolbar: this.toolbar,
     menubar: false,
     plugins: this.plugins,
     // contextmenu: this.toolbar,
-    images_upload_handler: function (blobInfo, succFun, failFun) {
-      blobInfo.blob(); //转化为易于理解的file对象
-    },
-    file_picker_types: "file image media",
-    file_picker_callback: function (callback, value, meta) {
-      if (meta.filetype == "file") {
-        callback("mypage.html", { text: "My text" });
-      }
-      // Provide image and alt text for the image dialog
-      if (meta.filetype == "image") {
-        callback("myimage.jpg", { alt: "My alt text" });
-      }
-      // Provide alternative source and posted for the media dialog
-      if (meta.filetype == "media") {
-        callback("movie.mp4", { source2: "alt.ogg", poster: "image.jpg" });
-      }
-    },
+    // images_upload_handler: function (blobInfo, succFun, failFun) {
+    //   blobInfo.blob(); //转化为易于理解的file对象
+    // },
+    // file_picker_types: "file image media",
+    // file_picker_callback: function (callback, value, meta) {
+    //   if (meta.filetype == "file") {
+    //     callback("mypage.html", { text: "My text" });
+    //   }
+    //   // Provide image and alt text for the image dialog
+    //   if (meta.filetype == "image") {
+    //     callback("myimage.jpg", { alt: "My alt text" });
+    //   }
+    //   // Provide alternative source and posted for the media dialog
+    //   if (meta.filetype == "media") {
+    //     callback("movie.mp4", { source2: "alt.ogg", poster: "image.jpg" });
+    //   }
+    // },
   };
 
   mounted() {
     tinymce.init({});
+  }
+  @Watch("tinymceHtml")
+  getTinymceHtml(newValue: any) {
+    this.value = newValue;
+  }
+  @Watch("value")
+  sendValue() {
+    this.$emit("input", this.value);
   }
 }
 </script>

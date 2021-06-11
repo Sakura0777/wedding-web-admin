@@ -1,17 +1,17 @@
 <template>
-  <div style="overflow: auto">
+  <div>
     <el-row :gutter="20" style="margin-top: 30px">
       <el-col :span="6">
         <el-input
           size="medium"
           placeholder="请输入标题"
-          v-model="title"
+          v-model="page.key"
           clearable
         >
         </el-input>
       </el-col>
       <el-col :span="5">
-        <el-select v-model="type" placeholder="请选择文章类型">
+        <el-select v-model="page.type" placeholder="请选择文章类型">
           <el-option
             v-for="item in typeSelectOptions"
             :key="item.value"
@@ -21,11 +21,11 @@
           </el-option>
         </el-select>
       </el-col>
-      <el-col :span="11">
+      <el-col :span="10">
         <el-button type="primary" plain>搜索</el-button>
       </el-col>
       <el-col :span="2">
-        <el-button type="primary" plain @click="openEditor = true"
+        <el-button type="primary" plain @click="dialogFormVisible = true"
           >添加</el-button
         >
       </el-col>
@@ -34,34 +34,46 @@
       :data="tableData"
       stripe
       border
-      style="width: 100%; margin-top: 20px"
+      style="width: 95%; margin-top: 20px"
     >
-      <el-table-column prop="ID" label="ID" align="center"> </el-table-column>
       <el-table-column
-        prop="account"
+        prop="title"
         label="标题"
         align="center"
       ></el-table-column>
       <el-table-column prop="imgSrc" label="封面" align="center">
         <template slot-scope="scope">
-          <img
-            style="
-              width: 80px;
-              max-heigth: 80px;
-              display: block;
-              margin: 0 auto;
-            "
-            :src="scope.row.imgSrc"
-          /> </template
+          <el-image
+            style="width: 80px; height: 80px"
+            :src="picUrlFormat(scope.row.cover_photo)"
+            :preview-src-list="[picUrlFormat(scope.row.cover_photo)]"
+          >
+          </el-image>
+        </template>
+        ></el-table-column
+      >
+      <el-table-column
+        label="类型"
+        :formatter="(row) => typeList[row.flag]"
+        align="center"
       ></el-table-column>
       <el-table-column
-        prop="status"
+        :formatter="
+          (row) => timeFormat(row.create_time * 1000, 'yyyy-MM-dd hh:mm')
+        "
         label="添加时间"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="status"
+        :formatter="
+          (row) => timeFormat(row.update_time * 1000, 'yyyy-MM-dd hh:mm')
+        "
+        label="更新时间"
+        align="center"
+      ></el-table-column>
+      <el-table-column
         label="状态"
+        :formatter="(row) => (row.flag ? '已发布' : '未发布')"
         align="center"
       ></el-table-column>
       <el-table-column label="操作" align="center" width="250">
@@ -76,36 +88,41 @@
     </el-table>
     <el-row type="flex" justify="center" style="margin-top: 15px">
       <el-pagination
-        :page-size="20"
-        :pager-count="11"
-        layout="prev, pager, next"
-        :total="1000"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="page.pn"
+        :page-sizes="[5, 10]"
+        :page-size="page.size"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="page.total"
       >
       </el-pagination>
     </el-row>
-    <div class="tips" style="margin-top: 20px">
-      <p>温馨提示：</p>
-      <p>1.点击预览将直接跳转到文章页面。</p>
-      <p>
-        2.静态化--生成静态HTML文件，可以直接请求静态页面，不需要请求后台资源，提高访问速度。
-      </p>
-    </div>
-    <div class="editorBox" v-if="openEditor">
-      <p style="margin: 10px; color: #409eff">添加文章</p>
-      <el-row gutter="20" class="inputBox">
-        <el-col span="8" offset="1">
-          <label >标题</label>
+    <el-dialog
+      width="80%"
+      title="添加文章"
+      :close-on-click-modal="false"
+      :visible.sync="dialogFormVisible"
+      :show-close="!submiting"
+    >
+      <el-form
+        :model="newArticle"
+        status-icon
+        :rules="inputRules"
+        ref="newArticle"
+        label-width="100px"
+      >
+        <el-form-item label="标题" prop="title">
           <el-input
-            style="width: 85%"
-            v-model="form.title"
+            style="width: 60%"
+            v-model="newArticle.title"
             placeholder="请输入文章标题"
           ></el-input>
-        </el-col>
-        <el-col span="6">
-          <label for="">类型</label>
+        </el-form-item>
+        <el-form-item label="文章类型" prop="article_type">
           <el-select
-            style="width: 80%"
-            v-model="form.type"
+            style="width: 20%"
+            v-model="newArticle.article_type"
             placeholder="请选择文章类型"
           >
             <el-option
@@ -116,43 +133,32 @@
             >
             </el-option>
           </el-select>
-        </el-col>
-        <el-col span="4">
-          <label style="dispaly: inline-block; transform: translateY(-40px)">封面</label>
-          <el-upload
-            class="avatar-uploader"
-            style="display: inline-block"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
+        </el-form-item>
+        <el-form-item label="文章封面" prop="cover_photo">
+          <image-upload
+            :imageSrc="newArticle.cover_photo"
+            @change="(e) => (newArticle.cover_photo = e)"
+          ></image-upload>
+        </el-form-item>
+      </el-form>
+      <el-row :gutter="40" style="margin-bottom: 20px">
+        <el-col :span="20">
+          <el-button type="primary" :loading="submiting" @click="submitAdd()"
+            >保存</el-button
           >
-            <img v-if="form.imgUrl" :src="form.imgUrl" class="avatar" />
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-upload>
         </el-col>
-        <el-col span="5">
-          <label for="">页面静态化</label>
-          <el-switch v-model="form.staticSwitch"></el-switch>
-        </el-col>
-      </el-row>
-      <el-row gutter="40" style="margin-top: 20px">
-        <el-col span="20">
-          <el-button type="primary" style="float: right">保存</el-button>
-        </el-col>
-        <el-col span="4">
+        <el-col :span="4">
           <el-button type="danger" plain @click="cancelEdit"
             >取消并退出</el-button
           >
         </el-col>
       </el-row>
-      <tinymce-editor class="editor" v-model="article"></tinymce-editor>
-    </div>
-    <el-dialog title="提示" :visible.sync="dialogVisible" width="350px">
-      <span>{{ dialogMsg }}</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogConfirm">确 定</el-button>
-      </span>
+      <tinymce-editor
+        class="editor"
+        ref="tinymceEditor"
+        :tinymceHtml="newArticle.content"
+        @input="(e) => (newArticle.content = e)"
+      ></tinymce-editor>
     </el-dialog>
   </div>
 </template>
@@ -160,99 +166,209 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import tinymceEditor from "../../components/tinymceEditor.vue";
+import imageUpload from "../../components/imageUpload.vue";
+import { timeFormat, picUrlFormat } from "@/utils/format";
+
+import {
+  articleListApi,
+  articleDeleteApi,
+  articleUpdateApi,
+  articleAddApi,
+} from "@/api/api";
 @Component({
   name: "index",
   components: {
     tinymceEditor,
+    imageUpload,
   },
 })
 export default class extends Vue {
-  type = "";
-  title = "";
-  article = "";
-  openEditor = false;
-  dialogVisible = false;
-  dialogMsg = "";
-  typeSelectOptions = [
+  isLoading: boolean = false;
+  submiting: Boolean = false;
+  dialogFormVisible: Boolean = false;
+  dialogFormVisible2: Boolean = false;
+  typeList: any = [
+    "结婚领证仪式",
+    "一站式婚礼",
+    "婚庆见闻",
+    "备婚助手",
+    "婚礼问答",
+    "婚礼礼仪小百科",
+  ];
+  typeSelectOptions: any = [
     {
-      value: "选项1",
+      value: 0,
       label: "结婚领证仪式",
     },
     {
-      value: "选项2",
-      label: "一站式婚庆",
+      value: 1,
+      label: "一站式婚礼",
     },
     {
-      value: "选项3",
-      label: "婚俗见闻",
+      value: 2,
+      label: "婚庆见闻",
     },
     {
-      value: "选项4",
+      value: 3,
       label: "备婚助手",
     },
     {
-      value: "选项5",
+      value: 4,
       label: "婚礼问答",
     },
     {
-      value: "选项6",
+      value: 5,
       label: "婚礼礼仪小百科",
     },
   ];
-  tableData = [
-    {
-      ID: "7777",
-      signTime: "2016-05-02 19:09:07",
-      account: "王小虎",
-      status: "正常",
-      imgSrc: "https://t7.baidu.com/it/u=2952695990,867219380&fm=193&f=GIF",
-    },
-    {
-      ID: "95949545",
-      signTime: "2016-05-02 19:09:07",
-      account: "拉克丝",
-      status: "正常",
-      imgSrc: "https://t7.baidu.com/it/u=2952695990,867219380&fm=193&f=GIF",
-    },
-    {
-      ID: "38843493",
-      signTime: "2016-05-02 19:09:07",
-      account: "王小虎",
-      status: "已禁用",
-      imgSrc: "https://t7.baidu.com/it/u=201707926,1798162982&fm=193&f=GIF",
-    },
-    {
-      ID: "99999",
-      signTime: "2021-05-03 19:09:07",
-      account: "galen",
-      status: "正常",
-      imgSrc: "https://t7.baidu.com/it/u=4214840714,1181319136&fm=193&f=GIF",
-    },
-    {
-      ID: "000555",
-      signTime: "2016-05-02 19:09:07",
-      account: "lux",
-      status: "正常",
-      imgSrc: "https://t7.baidu.com/it/u=4214840714,1181319136&fm=193&f=GIF",
-    },
-  ];
-  form = {
-    title: "",
+  tableData: any = [];
+  page: any = {
+    key: "",
     type: "",
-    staticSwitch: true,
-    imgUrl: "",
+    id: "",
+    pn: 1,
+    size: 5,
+    total: 0,
   };
-  cancelEdit() {
-    this.dialogVisible = true;
-    this.dialogMsg = "文章尚未保存，是否取消并退出文章编辑。";
+
+  newArticle: any = {
+    title: "",
+    cover_photo: "",
+    article_type: 0,
+    content: "",
+  };
+  modifyArticle: any = {
+    title: "",
+    cover_photo: "",
+    article_type: 0,
+    content: "",
+  };
+  inputRules: any = {
+    introduce: [
+      {
+        type: "string",
+        required: true,
+        message: "简介不能为空",
+        trigger: "blur",
+      },
+    ],
+  };
+  timeFormat = timeFormat;
+  picUrlFormat = picUrlFormat;
+  mounted() {
+    this.getArticleList(true);
   }
-  dialogConfirm() {
-    this.dialogVisible = false;
-    this.openEditor = false;
+  async getArticleList(isFirst?: boolean, isSerach?: Boolean) {
+    if (this.isLoading) return;
+    this.isLoading = true;
+    if (isFirst) this.page.pn = 1;
+    if (!isSerach) {
+      this.page.key = "";
+    }
+    let res = await articleListApi(this.page);
+    this.page.total = res.data.count;
+    this.tableData = res.data.list;
+    this.isLoading = false;
+  }
+  modifyGiftStatus(id: number, option: number) {
+    let msg = "";
+    switch (option) {
+      case 0:
+        msg = "你确定要停用此礼包吗？";
+        break;
+      case 1:
+        msg = "你确定要启用此礼包吗？";
+        break;
+      case 2:
+        msg = "你确定要删除此礼包吗？";
+        break;
+    }
+    this.$confirm(msg, "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    })
+      .then(async () => {
+        let params = {
+          id: id,
+          status: option,
+        };
+        console.log("params", params);
+        let res = await articleDeleteApi(params);
+        switch (option) {
+          case 0:
+            this.$message.success("礼包停用成功");
+            break;
+          case 1:
+            this.$message.success("礼包启用成功");
+            break;
+          case 2:
+            this.$message.success("礼包已删除");
+            break;
+        }
+        this.getArticleList(true);
+      })
+      .catch(() => {
+        return;
+      });
+  }
+  modifyBtn(item: Object) {
+    this.modifyArticle = item;
+    this.dialogFormVisible2 = true;
+  }
+  submitAdd() {
+    // if (this.newArticle.picture === "") {
+    //   return this.$message.success("请先上传图片");
+    // }
+    if (this.submiting) return;
+    this.submiting = true;
+    articleAddApi(this.newArticle)
+      .then((res) => {
+        this.$message.success("新增礼包成功");
+        this.clearForm("newArticle");
+        this.getArticleList(true);
+      })
+      .catch(() => {})
+      .finally(() => {
+        this.submiting = false;
+      });
+  }
+  submitModify() {
+    if (this.modifyArticle.picture === "") {
+      return this.$message.success("请先上传图片");
+    }
+    if (this.submiting) return;
+    this.submiting = true;
+    articleUpdateApi(this.modifyArticle)
+      .then((res) => {
+        this.$message.success("礼包修改成功");
+        this.clearForm("modifyArticle");
+        this.getArticleList(true);
+      })
+      .catch(() => {})
+      .finally(() => {
+        this.submiting = false;
+      });
+  }
+  handleSizeChange(size: number) {
+    this.page.size = size;
+    this.getArticleList(true);
+  }
+
+  handleCurrentChange(current: number) {
+    this.page.pn = current;
+    this.getArticleList();
+  }
+  clearForm(name) {
+    this.$refs[name].resetFields();
+    this.dialogFormVisible = false;
+    this.dialogFormVisible2 = false;
+  }
+  cancelEdit() {
+    this.dialogFormVisible = true;
   }
   delArticle() {
-    this.dialogVisible = true;
-    this.dialogMsg = "确认删除该文章吗？";
+    this.dialogFormVisible = true;
   }
 }
 </script>

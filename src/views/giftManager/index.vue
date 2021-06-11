@@ -37,8 +37,8 @@
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="flag"
         label="状态"
+        :formatter="(row) => (row.flag ? '已启用' : '停用')"
         align="center"
       ></el-table-column>
       <el-table-column label="操作" align="center">
@@ -99,7 +99,10 @@
           ></el-input>
         </el-form-item>
         <el-form-item label="图片">
-          <image-upload :imageSrc="newGift.picture" @change="(e) => (newGift.picture = e)"></image-upload>
+          <image-upload
+            :imageSrc="newGift.picture"
+            @change="(e) => (newGift.picture = e)"
+          ></image-upload>
         </el-form-item>
         <el-form-item>
           <el-button @click="clearForm('newGift')" :disabled="submiting"
@@ -305,7 +308,7 @@ export default class extends Vue {
     this.getGiftList();
   }
   clearForm(name: String) {
-    this.$refs[name].resetFields();
+       this.$refs[name].resetFields();
     this.dialogFormVisible = false;
     this.dialogFormVisible2 = false;
   }

@@ -96,7 +96,10 @@
         label-width="100px"
       >
         <el-form-item label="账号" prop="account">
-          <el-input v-model="newUser.account" placeholder="请输入一个邮箱地址"></el-input>
+          <el-input
+            v-model="newUser.account"
+            placeholder="请输入一个邮箱地址"
+          ></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="pwd">
           <el-input
@@ -224,7 +227,7 @@ export default class extends Vue {
     }
   }
   clearForm(name:String){
-    this.$refs[name].resetFields();
+        this.$ref.name.resetFields();
     this.dialogFormVisible = false
   }
   async getUserList(isFirst?: boolean,isSerach?:Boolean) {
