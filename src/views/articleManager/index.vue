@@ -22,7 +22,9 @@
         </el-select>
       </el-col>
       <el-col :span="10">
-        <el-button type="primary" plain>搜索</el-button>
+        <el-button type="primary" plain @click="getArticleList(true, true)"
+          >搜索</el-button
+        >
       </el-col>
       <el-col :span="2">
         <el-button type="primary" plain @click="dialogFormVisible = true"
@@ -44,7 +46,7 @@
       <el-table-column prop="imgSrc" label="封面" align="center">
         <template slot-scope="scope">
           <el-image
-            style="width: 80px; height: 80px"
+            style="width: 60px; height: 60px"
             :src="picUrlFormat(scope.row.cover_photo)"
             :preview-src-list="[picUrlFormat(scope.row.cover_photo)]"
           >
@@ -54,7 +56,7 @@
       >
       <el-table-column
         label="类型"
-        :formatter="(row) => typeList[row.flag]"
+        :formatter="(row) => typeList[row.article_type]"
         align="center"
       ></el-table-column>
       <el-table-column
@@ -76,14 +78,30 @@
         :formatter="(row) => (row.flag ? '已发布' : '未发布')"
         align="center"
       ></el-table-column>
-      <el-table-column label="操作" align="center" width="250">
-        <!-- <el-button type="text">静态化</el-button> -->
-        <el-button type="text">预览</el-button>
-        <el-button type="text" @click="openEditor = true">修改</el-button>
-        <el-button type="text">发布</el-button>
-        <el-button type="text" style="color: #e83929" @click="delArticle"
-          >删除</el-button
-        >
+      <el-table-column label="操作" align="center" width="150">
+        <template slot-scope="scope">
+          <el-button
+            type="text"
+            v-if="scope.row.flag === 0"
+            @click="modifyArticleStatus(scope.row.id, 1)"
+            >发布</el-button
+          >
+          <el-button
+            type="text"
+            v-else
+            @click="modifyArticleStatus(scope.row.id, 0)"
+            >停止发布</el-button
+          >
+          <el-button type="text" @click="modifyArticleInfo(scope.row)"
+            >修改</el-button
+          >
+          <el-button
+            type="text"
+            style="color: #e83929"
+            @click="modifyArticleStatus(scope.row.id, 2)"
+            >删除</el-button
+          >
+        </template>
       </el-table-column>
     </el-table>
     <el-row type="flex" justify="center" style="margin-top: 15px">
@@ -141,23 +159,79 @@
           ></image-upload>
         </el-form-item>
       </el-form>
-      <el-row :gutter="40" style="margin-bottom: 20px">
-        <el-col :span="20">
-          <el-button type="primary" :loading="submiting" @click="submitAdd()"
-            >保存</el-button
-          >
-        </el-col>
-        <el-col :span="4">
-          <el-button type="danger" plain @click="cancelEdit"
-            >取消并退出</el-button
-          >
-        </el-col>
+      <el-row style="margin-bottom: 20px; width: 95%">
+        <el-button
+          type="primary"
+          style="float: right"
+          :loading="submiting"
+          @click="submitAdd()"
+          >保存</el-button
+        >
       </el-row>
       <tinymce-editor
         class="editor"
         ref="tinymceEditor"
         :tinymceHtml="newArticle.content"
         @input="(e) => (newArticle.content = e)"
+      ></tinymce-editor>
+    </el-dialog>
+    <el-dialog
+      width="80%"
+      title="修改文章"
+      :close-on-click-modal="false"
+      :visible.sync="dialogFormVisible2"
+      :show-close="!submiting"
+    >
+      <el-form
+        :model="modifyArticle"
+        status-icon
+        :rules="inputRules"
+        ref="newArticle"
+        label-width="100px"
+      >
+        <el-form-item label="标题" prop="title">
+          <el-input
+            style="width: 60%"
+            v-model="modifyArticle.title"
+            placeholder="请输入文章标题"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="文章类型" prop="article_type">
+          <el-select
+            style="width: 20%"
+            v-model="modifyArticle.article_type"
+            placeholder="请选择文章类型"
+          >
+            <el-option
+              v-for="item in typeSelectOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="文章封面" prop="cover_photo">
+          <image-upload
+            :imageSrc="modifyArticle.cover_photo"
+            @change="(e) => (modifyArticle.cover_photo = e)"
+          ></image-upload>
+        </el-form-item>
+      </el-form>
+      <el-row style="margin-bottom: 20px; width: 95%">
+        <el-button
+          type="primary"
+          style="float: right"
+          :loading="submiting"
+          @click="submitModify()"
+          >保存</el-button
+        >
+      </el-row>
+      <tinymce-editor
+        class="editor"
+        ref="tinymceEditor"
+        :tinymceHtml="modifyArticle.content"
+        @input="(e) => (modifyArticle.content = e)"
       ></tinymce-editor>
     </el-dialog>
   </div>
@@ -197,6 +271,10 @@ export default class extends Vue {
   ];
   typeSelectOptions: any = [
     {
+      value: -1,
+      label: "全部",
+    },
+    {
       value: 0,
       label: "结婚领证仪式",
     },
@@ -224,7 +302,7 @@ export default class extends Vue {
   tableData: any = [];
   page: any = {
     key: "",
-    type: "",
+    type: -1,
     id: "",
     pn: 1,
     size: 5,
@@ -270,17 +348,17 @@ export default class extends Vue {
     this.tableData = res.data.list;
     this.isLoading = false;
   }
-  modifyGiftStatus(id: number, option: number) {
+  modifyArticleStatus(id: number, option: number) {
     let msg = "";
     switch (option) {
       case 0:
-        msg = "你确定要停用此礼包吗？";
+        msg = "你确定要停止发布此文章吗？";
         break;
       case 1:
-        msg = "你确定要启用此礼包吗？";
+        msg = "你确定要发布此文章吗？";
         break;
       case 2:
-        msg = "你确定要删除此礼包吗？";
+        msg = "你确定要删除此文章吗？";
         break;
     }
     this.$confirm(msg, "提示", {
@@ -294,16 +372,17 @@ export default class extends Vue {
           status: option,
         };
         console.log("params", params);
-        let res = await articleDeleteApi(params);
+        // let res =
+        await articleDeleteApi(params);
         switch (option) {
           case 0:
-            this.$message.success("礼包停用成功");
+            this.$message.success("文章已停止发布");
             break;
           case 1:
-            this.$message.success("礼包启用成功");
+            this.$message.success("文章已发布");
             break;
           case 2:
-            this.$message.success("礼包已删除");
+            this.$message.success("文章已删除");
             break;
         }
         this.getArticleList(true);
@@ -312,19 +391,19 @@ export default class extends Vue {
         return;
       });
   }
-  modifyBtn(item: Object) {
+  modifyArticleInfo(item: Object) {
     this.modifyArticle = item;
     this.dialogFormVisible2 = true;
   }
   submitAdd() {
-    // if (this.newArticle.picture === "") {
-    //   return this.$message.success("请先上传图片");
-    // }
+    if (this.newArticle.picture === "") {
+      return this.$message.success("请先上传图片");
+    }
     if (this.submiting) return;
     this.submiting = true;
     articleAddApi(this.newArticle)
       .then((res) => {
-        this.$message.success("新增礼包成功");
+        this.$message.success("新增文章成功");
         this.clearForm("newArticle");
         this.getArticleList(true);
       })
@@ -341,7 +420,7 @@ export default class extends Vue {
     this.submiting = true;
     articleUpdateApi(this.modifyArticle)
       .then((res) => {
-        this.$message.success("礼包修改成功");
+        this.$message.success("文章修改成功");
         this.clearForm("modifyArticle");
         this.getArticleList(true);
       })
@@ -360,15 +439,9 @@ export default class extends Vue {
     this.getArticleList();
   }
   clearForm(name) {
-    this.$refs[name].resetFields();
     this.dialogFormVisible = false;
     this.dialogFormVisible2 = false;
-  }
-  cancelEdit() {
-    this.dialogFormVisible = true;
-  }
-  delArticle() {
-    this.dialogFormVisible = true;
+    this.$refs[name].resetFields();
   }
 }
 </script>

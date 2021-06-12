@@ -38,8 +38,8 @@
           </template>
         </el-menu>
       </el-aside>
-      <el-main style="height: 100%">
-        <el-scrollbar style="height: 100%" ref="scrollbar">
+      <el-main style="height: 100%;">
+        <el-scrollbar style="height: 90%" ref="scrollbar">
           <router-view></router-view>
         </el-scrollbar>
       </el-main>

@@ -6,6 +6,7 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from "vue-property-decorator";
+import { imageUploadApi, videoUploadApi } from "@/api/api";
 import tinymce from "tinymce/tinymce";
 import Editor from "@tinymce/tinymce-vue";
 import "tinymce/icons/default/icons";
@@ -47,28 +48,69 @@ export default class extends Vue {
     toolbar: this.toolbar,
     menubar: false,
     plugins: this.plugins,
-    // contextmenu: this.toolbar,
-    // images_upload_handler: function (blobInfo, succFun, failFun) {
-    //   blobInfo.blob(); //转化为易于理解的file对象
-    // },
-    // file_picker_types: "file image media",
-    // file_picker_callback: function (callback, value, meta) {
-    //   if (meta.filetype == "file") {
-    //     callback("mypage.html", { text: "My text" });
-    //   }
-    //   // Provide image and alt text for the image dialog
-    //   if (meta.filetype == "image") {
-    //     callback("myimage.jpg", { alt: "My alt text" });
-    //   }
-    //   // Provide alternative source and posted for the media dialog
-    //   if (meta.filetype == "media") {
-    //     callback("movie.mp4", { source2: "alt.ogg", poster: "image.jpg" });
-    //   }
-    // },
+    images_upload_handler: function (blobInfo, success, fail) {
+      let file = blobInfo.blob(); //转化为易于理解的file对象
+      let imageForm = new FormData();
+      imageForm.append("file", file);
+      console.log("00000000000", file);
+      imageUploadApi(imageForm)
+        .then((res) => {
+          console.log(res);
+          success("http://material.shilim.cn" + res.data.path);
+        })
+        .catch((e) => {
+          fail(e);
+        });
+    },
+    file_picker_types: " media",
+    media_live_embeds: true,
+    file_picker_callback: function (callback, value, meta) {
+      if (meta.filetype == "media") {
+        // callback(this.uploadVideo());
+        //模拟出一个input用于添加本地文件
+        let input = document.createElement("input");
+        input.setAttribute("type", "file");
+        input.setAttribute("accept", "video/*");
+        input.click();
+        input.onchange = function () {
+          let file = this.files[0];
+          let videoFrom = new FormData();
+          videoFrom.append("file", file);
+          videoUploadApi(videoFrom)
+            .then((res) => {
+              console.log(res);
+              callback("http://material.shilim.cn" + res.data.path);
+            })
+            .catch((e) => {
+              callback(e);
+            });
+        };
+      }
+    },
   };
 
   mounted() {
     tinymce.init({});
+  }
+  uploadVideo() {
+    //模拟出一个input用于添加本地文件
+    let input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "video/*");
+    input.click();
+    input.onchange = function () {
+      let file = this.files[0];
+      let formData = new FormData();
+      formData.append("file", file);
+      videoUploadApi(imageForm)
+        .then((res) => {
+          console.log(res);
+          success("http://material.shilim.cn" + res.data.path);
+        })
+        .catch((e) => {
+          fail(e);
+        });
+    };
   }
   @Watch("tinymceHtml")
   getTinymceHtml(newValue: any) {

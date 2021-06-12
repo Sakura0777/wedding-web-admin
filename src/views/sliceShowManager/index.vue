@@ -35,7 +35,7 @@
       <el-table-column prop="photo" label="图片" align="center">
         <template slot-scope="scope">
           <el-image
-            style="width: 80px; height: 80px"
+            style="width: 60px; height: 60px"
             :src="picUrlFormat(scope.row.photo)"
             :preview-src-list="[picUrlFormat(scope.row.photo)]"
           >
@@ -62,7 +62,7 @@
         label="排序"
         align="center"
       ></el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" width="120">
         <template slot-scope="scope">
           <el-button type="text" @click="modifyBtn(scope.row)">修改</el-button>
           <el-button
