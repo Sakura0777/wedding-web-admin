@@ -45,7 +45,7 @@ export default class extends Vue {
     document.getElementById("fileInput").click();
   }
   async uploadPhoto() {
-    let file = this.$refs.image.files[0];
+    let file = (this.$refs.image as any).files[0];
     const isLt10M = file.size / 1024 / 1024 < 10;
     if (!isLt10M) {
       return this.$message.error("上传头像图片大小不能超过 10MB!");
@@ -53,7 +53,6 @@ export default class extends Vue {
     let imageForm = new FormData();
     imageForm.append("file", file);
     let res = await imageUploadApi(imageForm);
-    console.log(res);
     this.$emit("change", res.data.path);
   }
 }

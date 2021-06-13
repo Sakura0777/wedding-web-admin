@@ -64,17 +64,6 @@ export default class extends Vue {
 
   get routes() {
     return routes.filter((item: any) => {
-      // // 有限进行权限判断
-      // if (item.meta.roles && item.meta.roles.indexOf(this.role) < 0) {
-      //   return false;
-      // }
-      // if (!item.meta.hidden && item.children && item.children.length > 0) {
-      //   if (item.meta.quick) {
-      //     item.children = [];
-      //   } else {
-      //     item.children = item.children.filter((child: any) => child.component);
-      //   }
-      // }
       return !item.meta.hidden;
     });
   }

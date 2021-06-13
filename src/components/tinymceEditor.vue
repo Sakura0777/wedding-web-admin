@@ -29,7 +29,7 @@ import "tinymce/plugins/preview";
   },
 })
 export default class extends Vue {
-  @Prop({ default: "" }) tinymceHtml: String;
+  @Prop({ default: "" }) tinymceHtml?: String;
   value = this.tinymceHtml;
   plugins =
     "preview fullscreen link lists image media table textcolor wordcount contextmenu ";
@@ -48,14 +48,12 @@ export default class extends Vue {
     toolbar: this.toolbar,
     menubar: false,
     plugins: this.plugins,
-    images_upload_handler: function (blobInfo, success, fail) {
+    images_upload_handler: function (blobInfo:any, success:Function, fail:Function) {
       let file = blobInfo.blob(); //转化为易于理解的file对象
       let imageForm = new FormData();
       imageForm.append("file", file);
-      console.log("00000000000", file);
       imageUploadApi(imageForm)
         .then((res) => {
-          console.log(res);
           success("http://material.shilim.cn" + res.data.path);
         })
         .catch((e) => {
@@ -64,7 +62,7 @@ export default class extends Vue {
     },
     file_picker_types: " media",
     media_live_embeds: true,
-    file_picker_callback: function (callback, value, meta) {
+    file_picker_callback: function (callback:Function, value:Object, meta:Object) {
       if (meta.filetype == "media") {
         // callback(this.uploadVideo());
         //模拟出一个input用于添加本地文件
@@ -78,7 +76,6 @@ export default class extends Vue {
           videoFrom.append("file", file);
           videoUploadApi(videoFrom)
             .then((res) => {
-              console.log(res);
               callback("http://material.shilim.cn" + res.data.path);
             })
             .catch((e) => {
@@ -87,7 +84,7 @@ export default class extends Vue {
         };
       }
     },
-    media_url_resolver: function (data, resolve) {
+    media_url_resolver: function (data:Object, resolve:Function) {
       try {
         let embedHtml = `<p>
                  <span
@@ -112,26 +109,6 @@ export default class extends Vue {
 
   mounted() {
     tinymce.init({});
-  }
-  uploadVideo() {
-    //模拟出一个input用于添加本地文件
-    let input = document.createElement("input");
-    input.setAttribute("type", "file");
-    input.setAttribute("accept", "video/*");
-    input.click();
-    input.onchange = function () {
-      let file = this.files[0];
-      let formData = new FormData();
-      formData.append("file", file);
-      videoUploadApi(imageForm)
-        .then((res) => {
-          console.log(res);
-          success("http://material.shilim.cn" + res.data.path);
-        })
-        .catch((e) => {
-          fail(e);
-        });
-    };
   }
   @Watch("tinymceHtml")
   getTinymceHtml(newValue: any) {

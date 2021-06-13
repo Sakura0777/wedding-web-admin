@@ -397,7 +397,7 @@ export default class extends Vue {
           id: id,
           status: option,
         };
-        console.log("params", params);
+
         // let res =
         await articleDeleteApi(params);
         switch (option) {
@@ -464,7 +464,7 @@ export default class extends Vue {
     this.page.pn = current;
     this.getArticleList();
   }
-  clearForm(name) {
+  clearForm(name:String) {
     this.dialogFormVisible = false;
     this.dialogFormVisible2 = false;
     this.$refs[name].resetFields();

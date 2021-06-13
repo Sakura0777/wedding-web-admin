@@ -241,7 +241,6 @@ export default class extends Vue {
           id: id,
           status: option,
         };
-        console.log("params", params);
         let res = await giftDeleteApi(params);
         switch (option) {
           case 0:

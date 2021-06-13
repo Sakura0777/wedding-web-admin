@@ -89,7 +89,6 @@ export default class extends Vue {
   }
     timeFormat = timeFormat;
   async getLogList(isFirst?: boolean, isSerach?: Boolean) {
-    console.log("时间", this.dateRange);
     if (this.isLoading) return;
     this.isLoading = true;
     if (isFirst) this.page.pn = 1;
@@ -101,7 +100,6 @@ export default class extends Vue {
       this.page.end = this.dateRange[1];
     }
     let res = await logListApi(this.page);
-    console.info("留言列表接口返回了哦", res);
     this.page.total = res.data.count;
     this.tableData = res.data.list;
     this.isLoading = false;

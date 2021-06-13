@@ -103,7 +103,7 @@ export default class extends Vue {
       this.page.key = "";
     }
     let res = await messageListApi(this.page);
-    console.info("留言列表接口返回了哦", res);
+
     this.page.total = res.data.count;
     this.tableData = res.data.list;
     this.isLoading = false;

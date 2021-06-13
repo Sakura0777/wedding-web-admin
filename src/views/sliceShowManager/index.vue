@@ -264,7 +264,7 @@ export default class extends Vue {
       this.page.key = "";
     }
     let res = await sliceShowListApi(this.page);
-    console.info("留言列表接口返回了哦", res);
+
     this.page.total = res.data.count;
     this.tableData = res.data.list;
     this.isLoading = false;
@@ -279,7 +279,6 @@ export default class extends Vue {
         let params = {
           id: id,
         };
-        console.log("params", params);
         let res = await sliceShowDeleteApi(params);
         this.$message.success("轮播图删除成功");
 

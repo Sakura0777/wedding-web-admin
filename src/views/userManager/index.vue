@@ -238,7 +238,6 @@ export default class extends Vue {
       this.page.key =''
     }
     let res = await userListApi(this.page);
-    console.info("用户列表接口返回了哦", res);
     this.page.total = res.data.count;
     this.tableData = res.data.list;
     this.isLoading = false;
@@ -270,7 +269,6 @@ export default class extends Vue {
           uid: id,
           status: option,
         };
-        console.log("params", params);
         let res = await userDeleteApi(params);
         switch (option) {
           case 0:
