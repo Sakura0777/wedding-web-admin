@@ -26,6 +26,7 @@ router.beforeEach(async (to: Route, _: Route, next: any) => {
 });
 
 router.afterEach((to: Route) => {
+  console.log('我要设置标题呀',to)
   // set page title
-  document.title = to.meta.title;
+  document.title = to.matched[0].meta.title;
 });

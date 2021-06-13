@@ -87,6 +87,27 @@ export default class extends Vue {
         };
       }
     },
+    media_url_resolver: function (data, resolve) {
+      try {
+        let embedHtml = `<p>
+                 <span
+                data-mce-selected="1"
+                data-mce-object="video"
+                data-mce-p-controls="controls"
+                data-mce-p-controlslist="nodownload"
+                data-mce-p-allowfullscreen="true"
+                style="width: 500px;height:300px;display: block;"
+                data-mce-p-src=${data.url} >
+                <video src=${data.url} width="100%" height="100%" controls="controls" controlslist="nodownload">
+                </video>
+              </span>
+                </p>
+                <p style="text-align: left;"></p>`;
+        resolve({ html: embedHtml });
+      } catch (e) {
+        resolve({ html: "" });
+      }
+    },
   };
 
   mounted() {

@@ -7,12 +7,12 @@ module.exports = {
   devServer: {
     disableHostCheck: true,
     proxy: {
-      "/gkc": {
+      "/wedding": {
         target: `http://material.shilim.cn`,
         changeOrigin: true, // needed for virtual hosted sites
         ws: true, // proxy websockets,
         pathRewrite: {
-          "^/gkc": "",
+          "^/wedding": "",
         },
       },
       "/images": {

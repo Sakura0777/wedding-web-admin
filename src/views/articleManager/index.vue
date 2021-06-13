@@ -144,7 +144,7 @@
             placeholder="请选择文章类型"
           >
             <el-option
-              v-for="item in typeSelectOptions"
+              v-for="item in typeSelectOptions2"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -203,7 +203,7 @@
             placeholder="请选择文章类型"
           >
             <el-option
-              v-for="item in typeSelectOptions"
+              v-for="item in typeSelectOptions2"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -274,6 +274,32 @@ export default class extends Vue {
       value: -1,
       label: "全部",
     },
+    {
+      value: 0,
+      label: "结婚领证仪式",
+    },
+    {
+      value: 1,
+      label: "一站式婚礼",
+    },
+    {
+      value: 2,
+      label: "婚庆见闻",
+    },
+    {
+      value: 3,
+      label: "备婚助手",
+    },
+    {
+      value: 4,
+      label: "婚礼问答",
+    },
+    {
+      value: 5,
+      label: "婚礼礼仪小百科",
+    },
+  ];
+    typeSelectOptions2: any = [
     {
       value: 0,
       label: "结婚领证仪式",
