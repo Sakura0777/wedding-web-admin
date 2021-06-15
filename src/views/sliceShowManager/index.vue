@@ -105,10 +105,10 @@
         </el-form-item>
         <el-form-item label="跳转地址" prop="jump_url">
           <el-input v-model="newSliceShow.jump_url"></el-input>
-          <p>
-            跳转地址，如果是内部文章跳转，可以不加域名，例如/article/1.html，如果是跳转外部链接则需加上域名，例如：https://www.baidu.com
-          </p>
         </el-form-item>
+        <p style="margin-left: 100px; font-size: 12px; color: #409eff">
+          跳转地址，如果是内部文章跳转，可以不加域名，例如/article/1.html，如果是跳转外部链接则需加上域名，例如：https://www.baidu.com
+        </p>
         <el-form-item label="排序" prop="sort">
           <el-input
             type="number"
@@ -118,7 +118,8 @@
           <p>数字越大，排序越靠前</p>
         </el-form-item>
         <el-form-item label="图片">
-          <image-upload :imageSrc="newSliceShow.photo"
+          <image-upload
+            :imageSrc="newSliceShow.photo"
             @change="(e) => (newSliceShow.photo = e)"
           ></image-upload>
         </el-form-item>
@@ -151,10 +152,10 @@
         </el-form-item>
         <el-form-item label="跳转地址" prop="jump_url">
           <el-input v-model="modifySliceShow.jump_url"></el-input>
-          <p>
-            跳转地址，如果是内部文章跳转，可以不加域名，例如/article/1.html，如果是跳转外部链接则需加上域名，例如：https://www.baidu.com
-          </p>
         </el-form-item>
+        <p style="margin-left: 100px; font-size: 12px; color: #409eff">
+          跳转地址，如果是内部文章跳转，可以不加域名，例如/article/1.html，如果是跳转外部链接则需加上域名，例如：https://www.baidu.com
+        </p>
         <el-form-item label="排序" prop="sort">
           <el-input
             type="number"
@@ -293,8 +294,10 @@ export default class extends Vue {
     this.dialogFormVisible2 = true;
   }
   submitAdd() {
+    (this.$refs["newSliceShow"] as any).validate((valid: boolean) => {
+      if (valid) {
     if (this.newSliceShow.photo === "") {
-      return this.$message.success("请先上传图片");
+      return this.$message.error("请先上传图片");
     }
     if (this.submiting) return;
     this.submiting = true;
@@ -308,23 +311,29 @@ export default class extends Vue {
       .finally(() => {
         this.submiting = false;
       });
+      }
+    })
   }
   submitModify() {
-    if (this.modifySliceShow.photo === "") {
-      return this.$message.success("请先上传图片");
-    }
-    if (this.submiting) return;
-    this.submiting = true;
-    sliceShowUpdateApi(this.modifySliceShow)
-      .then((res) => {
-        this.$message.success("轮播图修改成功");
-        this.clearForm("modifySliceShow");
-        this.getSliceShowList(true);
-      })
-      .catch(() => {})
-      .finally(() => {
-        this.submiting = false;
-      });
+    (this.$refs["modifySliceShow"] as any).validate((valid: boolean) => {
+      if (valid) {
+      if (this.modifySliceShow.photo === "") {
+        return this.$message.error("请先上传图片");
+      }
+      if (this.submiting) return;
+      this.submiting = true;
+      sliceShowUpdateApi(this.modifySliceShow)
+        .then((res) => {
+          this.$message.success("轮播图修改成功");
+          this.clearForm("modifySliceShow");
+          this.getSliceShowList(true);
+        })
+        .catch(() => {})
+        .finally(() => {
+          this.submiting = false;
+        });
+        }
+        })
   }
   handleSizeChange(size: number) {
     this.page.size = size;

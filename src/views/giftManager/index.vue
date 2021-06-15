@@ -264,8 +264,11 @@ export default class extends Vue {
     this.dialogFormVisible2 = true;
   }
   submitAdd() {
+    if (this.newGift.introduce === "") {
+      return this.$message.error("请输入礼包简介");
+    }
     if (this.newGift.picture === "") {
-      return this.$message.success("请先上传图片");
+      return this.$message.error("请先上传图片");
     }
     if (this.submiting) return;
     this.submiting = true;
@@ -281,8 +284,11 @@ export default class extends Vue {
       });
   }
   submitModify() {
+    if (this.modifyGift.introduce === "") {
+      return this.$message.error("请输入礼包简介");
+    }
     if (this.modifyGift.picture === "") {
-      return this.$message.success("请先上传图片");
+      return this.$message.error("请先上传图片");
     }
     if (this.submiting) return;
     this.submiting = true;
@@ -307,7 +313,7 @@ export default class extends Vue {
     this.getGiftList();
   }
   clearForm(name: String) {
-       this.$refs[name].resetFields();
+    this.$refs[name].resetFields();
     this.dialogFormVisible = false;
     this.dialogFormVisible2 = false;
   }

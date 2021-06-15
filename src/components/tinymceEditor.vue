@@ -7,6 +7,7 @@
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from "vue-property-decorator";
 import { imageUploadApi, videoUploadApi } from "@/api/api";
+import { picUrlFormat } from "@/utils/format";
 import tinymce from "tinymce/tinymce";
 import Editor from "@tinymce/tinymce-vue";
 import "tinymce/icons/default/icons";
@@ -54,7 +55,7 @@ export default class extends Vue {
       imageForm.append("file", file);
       imageUploadApi(imageForm)
         .then((res) => {
-          success("http://material.shilim.cn" + res.data.path);
+          success(picUrlFormat( res.data.path));
         })
         .catch((e) => {
           fail(e);
@@ -76,7 +77,7 @@ export default class extends Vue {
           videoFrom.append("file", file);
           videoUploadApi(videoFrom)
             .then((res) => {
-              callback("http://material.shilim.cn" + res.data.path);
+              callback(picUrlFormat( res.data.path));
             })
             .catch((e) => {
               callback(e);

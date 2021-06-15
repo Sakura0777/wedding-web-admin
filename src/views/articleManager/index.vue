@@ -299,7 +299,7 @@ export default class extends Vue {
       label: "婚礼礼仪小百科",
     },
   ];
-    typeSelectOptions2: any = [
+  typeSelectOptions2: any = [
     {
       value: 0,
       label: "结婚领证仪式",
@@ -348,11 +348,11 @@ export default class extends Vue {
     content: "",
   };
   inputRules: any = {
-    introduce: [
+    title: [
       {
         type: "string",
         required: true,
-        message: "简介不能为空",
+        message: "标题不能为空",
         trigger: "blur",
       },
     ],
@@ -422,8 +422,14 @@ export default class extends Vue {
     this.dialogFormVisible2 = true;
   }
   submitAdd() {
-    if (this.newArticle.picture === "") {
-      return this.$message.success("请先上传图片");
+    if (this.newArticle.title === "") {
+      return this.$message.error("请先输入文章标题");
+    }
+    if (this.newArticle.cover_photo === "") {
+      return this.$message.error("请先上传封面图片");
+    }
+    if (this.newArticle.content === "") {
+      return this.$message.error("请输入文章内容");
     }
     if (this.submiting) return;
     this.submiting = true;
@@ -439,8 +445,14 @@ export default class extends Vue {
       });
   }
   submitModify() {
-    if (this.modifyArticle.picture === "") {
-      return this.$message.success("请先上传图片");
+    if (this.modifyArticle.title === "") {
+      return this.$message.error("请先输入文章标题");
+    }
+    if (this.modifyArticle.cover_photo === "") {
+      return this.$message.error("请先上传封面图片");
+    }
+    if (this.newArticle.content === "") {
+      return this.$message.error("请输入文章内容");
     }
     if (this.submiting) return;
     this.submiting = true;
@@ -464,7 +476,7 @@ export default class extends Vue {
     this.page.pn = current;
     this.getArticleList();
   }
-  clearForm(name:String) {
+  clearForm(name: String) {
     this.dialogFormVisible = false;
     this.dialogFormVisible2 = false;
     this.$refs[name].resetFields();
