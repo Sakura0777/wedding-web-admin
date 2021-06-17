@@ -470,6 +470,7 @@ export default class extends Vue {
       return this.$message.error("请输入文章内容");
     }
     if (this.submiting) return;
+    (this.modifyArticle.content as string).replace(this.picUrlFormat.toString(),'')
     this.submiting = true;
     articleUpdateApi(this.modifyArticle)
       .then((res) => {
