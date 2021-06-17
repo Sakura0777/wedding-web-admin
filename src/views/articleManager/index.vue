@@ -153,7 +153,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="文章封面" prop="cover_photo">
+        <el-form-item label="文章封面" prop="cover_photo" v-if="newArticle.article_type!==6">
           <image-upload
             :imageSrc="newArticle.cover_photo"
             @change="(e) => (newArticle.cover_photo = e)"
@@ -213,7 +213,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="文章封面" prop="cover_photo">
+        <el-form-item label="文章封面" prop="cover_photo" v-if="modifyArticle.article_type!==6">
           <image-upload
             :imageSrc="modifyArticle.cover_photo"
             @change="(e) => (modifyArticle.cover_photo = e)"
@@ -446,7 +446,7 @@ export default class extends Vue {
     if (this.newArticle.title === "") {
       return this.$message.error("请先输入文章标题");
     }
-    if (this.newArticle.cover_photo === "") {
+    if (this.newArticle.article_type !==  6 && this.newArticle.cover_photo === "") {
       return this.$message.error("请先上传封面图片");
     }
     if (this.newArticle.content === "") {
@@ -472,7 +472,7 @@ export default class extends Vue {
     if (this.modifyArticle.title === "") {
       return this.$message.error("请先输入文章标题");
     }
-    if (this.modifyArticle.cover_photo === "") {
+    if (this.modifyArticle.article_type !==  6 && this.modifyArticle.cover_photo === "") {
       return this.$message.error("请先上传封面图片");
     }
     if (this.modifyArticle.content === "") {
