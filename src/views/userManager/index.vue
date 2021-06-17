@@ -39,7 +39,7 @@
         align="center"
       ></el-table-column>
       <el-table-column
-        :formatter="(row) => (row.flag ? '已禁用' : '正常')"
+        :formatter="(row) => (statusList[row.flag])"
         label="状态"
         align="center"
       ></el-table-column>
@@ -57,7 +57,7 @@
           <el-button
             type="text"
             style="color: #e83929"
-            v-if="scope.row.flag === 0"
+            v-if="scope.row.flag === 1"
             @click="modifyUser(scope.row.uid, 1)"
             >禁用</el-button
           >
@@ -186,6 +186,7 @@ export default class extends Vue {
   submiting:Boolean=false
   dialogFormVisible:Boolean=false
   dialogFormVisible2:Boolean=false
+  statusList:any=['未激活','已激活','已禁用']
   page: any = {
     key: "",
     type: 2,

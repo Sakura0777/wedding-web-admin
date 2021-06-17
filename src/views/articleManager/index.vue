@@ -271,6 +271,7 @@ export default class extends Vue {
     "备婚助手",
     "婚礼问答",
     "婚礼礼仪小百科",
+    "用户协议"
   ];
   typeSelectOptions: any = [
     {
@@ -301,6 +302,10 @@ export default class extends Vue {
       value: 5,
       label: "婚礼礼仪小百科",
     },
+    {
+      value:  6,
+      label: "用户协议",
+    },
   ];
   typeSelectOptions2: any = [
     {
@@ -326,6 +331,10 @@ export default class extends Vue {
     {
       value: 5,
       label: "婚礼礼仪小百科",
+    },
+    {
+      value:  6,
+      label: "用户协议",
     },
   ];
   tableData: any = [];

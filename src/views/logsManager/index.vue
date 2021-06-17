@@ -12,13 +12,30 @@
         >
         </el-date-picker>
       </el-col>
+      <el-col :span="5">
+        <el-select v-model="page.type" placeholder="请选择文章类型">
+          <el-option
+            v-for="item in typeSelectOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </el-col>
       <el-col :span="10">
         <el-button type="primary" plain @click="getLogList(true, true)"
           >搜索</el-button
         >
       </el-col>
     </el-row>
-    <el-table :data="tableData" v-loading="isLoading" stripe border style="margin-top: 20px">
+    <el-table
+      :data="tableData"
+      v-loading="isLoading"
+      stripe
+      border
+      style="margin-top: 20px"
+    >
       <!-- <el-table-column prop="id" label="ID" align="center"> </el-table-column> -->
       <el-table-column
         prop="username"
@@ -78,16 +95,30 @@ export default class extends Vue {
   page: any = {
     startTime: "",
     endTime: "",
-    type: 2,
+    type: -1,
     id: "",
     pn: 1,
     size: 10,
     total: 0,
   };
+    typeSelectOptions: any = [
+    {
+      value: -1,
+      label: "全部",
+    },
+    {
+      value: 0,
+      label: "用户日志",
+    },
+    {
+      value: 1,
+      label: "管理日志",
+    },
+  ];
   mounted() {
     this.getLogList(true);
   }
-    timeFormat = timeFormat;
+  timeFormat = timeFormat;
   async getLogList(isFirst?: boolean, isSerach?: Boolean) {
     if (this.isLoading) return;
     this.isLoading = true;

@@ -40,12 +40,12 @@
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="signTime"
+        prop="content"
         label="留言内容"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="status"
+        prop="add_time"
         label="留言时间"
         align="center"
       ></el-table-column>
@@ -86,7 +86,6 @@ export default class extends Vue {
   tableData: any = [];
   page: any = {
     key: "",
-    type: 2,
     id: "",
     pn: 1,
     size: 10,
