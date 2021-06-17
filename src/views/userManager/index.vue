@@ -16,9 +16,7 @@
         >
       </el-col>
       <el-col :span="6">
-        <el-button type="primary" plain @click="dialogFormVisible = true"
-          >添加</el-button
-        >
+        <el-button type="primary" plain @click="showNewDialog">添加</el-button>
       </el-col>
     </el-row>
     <el-table
@@ -117,7 +115,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button @click="clearForm('newUser')" :disabled="submiting"
+          <el-button @click="dialogFormVisible = false" :disabled="submiting"
             >取消</el-button
           >
           <el-button type="primary" :loading="submiting" @click="submitAdd()"
@@ -156,7 +154,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button @click="clearForm('updateUser')" :disabled="submiting"
+          <el-button @click="dialogFormVisible2 = false" :disabled="submiting"
             >取消</el-button
           >
           <el-button type="primary" :loading="submiting" @click="submitUpdate"
@@ -226,10 +224,15 @@ export default class extends Vue {
       callback();
     }
   }
-  clearForm(name:String){
-        this.$ref.name.resetFields();
-    this.dialogFormVisible = false
+  showNewDialog(){
+    this.dialogFormVisible = true
+    this.$refs['newUser']&&(this.$refs['newUser'] as any).resetFields();
   }
+    showModifyDialog(){
+    this.dialogFormVisible2 = true
+    this.$refs['updateUser']&&(this.$refs['updateUser'] as any).resetFields();
+  }
+
   async getUserList(isFirst?: boolean,isSerach?:Boolean) {
     if (this.isLoading) return;
     this.isLoading = true;
@@ -299,7 +302,8 @@ export default class extends Vue {
         userUpdateApi(data)
           .then(res => {
             this.$message.success("用户密码修改成功");
-            this.clearForm('updateUser')
+            this.$refs['updateUser']&&(this.$refs['updateUser'] as any).resetFields();
+            this.dialogFormVisible = false
           })
           .catch(() => {})
           .finally(() => {
@@ -320,7 +324,8 @@ export default class extends Vue {
         userAddApi(data)
           .then(res => {
             this.$message.success("新增用户成功");
-            this.clearForm('newUser')
+            this.$refs['newUser']&&(this.$refs['newUser'] as any).resetFields();
+            this.dialogFormVisible = false
             this.getUserList(true);
           })
           .catch(() => {})

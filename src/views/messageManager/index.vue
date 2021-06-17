@@ -109,7 +109,7 @@ export default class extends Vue {
     this.isLoading = false;
   }
   messageDelete(uid: String) {
-    this.$confirm(msg, "提示", {
+    this.$confirm("确定删除该留言吗？", "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",

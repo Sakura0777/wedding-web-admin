@@ -39,10 +39,10 @@ import { picUrlFormat } from "@/utils/format";
   components: {},
 })
 export default class extends Vue {
-  @Prop({ default: "" }) imageSrc: String | undefined;
+  @Prop({ default: "" }) imageSrc!: String;
   picUrlFormat = picUrlFormat;
   focusFileInput() {
-    document.getElementById("fileInput").click();
+    document && (document as any).getElementById("fileInput").click();
   }
   async uploadPhoto() {
     let file = (this.$refs.image as any).files[0];

@@ -9,6 +9,7 @@
     </el-row>
     <el-table
       :data="tableData"
+      v-loading="isLoading"
       stripe
       border
       style="width: 100%; margin-top: 15px"
@@ -105,7 +106,7 @@
           ></image-upload>
         </el-form-item>
         <el-form-item>
-          <el-button @click="clearForm('newGift')" :disabled="submiting"
+          <el-button @click="dialogFormVisible = false" :disabled="submiting"
             >取消</el-button
           >
           <el-button type="primary" :loading="submiting" @click="submitAdd()"
@@ -141,7 +142,7 @@
           ></image-upload>
         </el-form-item>
         <el-form-item>
-          <el-button @click="clearForm('modifyGift')" :disabled="submiting"
+          <el-button @click="dialogFormVisible2 = false" :disabled="submiting"
             >取消</el-button
           >
           <el-button type="primary" :loading="submiting" @click="submitModify()"
@@ -205,6 +206,14 @@ export default class extends Vue {
   picUrlFormat = picUrlFormat;
   mounted() {
     this.getGiftList(true);
+  }
+      showNewDialog(){
+    this.dialogFormVisible = true
+    this.$refs['newGift']&&(this.$refs['newGift'] as any).resetFields();
+  }
+    showModifyDialog(){
+    this.dialogFormVisible2 = true
+    this.$refs['modifyGift']&&(this.$refs['modifyGift'] as any).resetFields();
   }
   async getGiftList(isFirst?: boolean, isSerach?: Boolean) {
     if (this.isLoading) return;
@@ -275,7 +284,8 @@ export default class extends Vue {
     giftAddApi(this.newGift)
       .then((res) => {
         this.$message.success("新增礼包成功");
-        this.clearForm("newGift");
+           this.dialogFormVisible = false
+    this.$refs['newGift']&&(this.$refs['newGift'] as any).resetFields();
         this.getGiftList(true);
       })
       .catch(() => {})
@@ -295,7 +305,8 @@ export default class extends Vue {
     giftUpdateApi(this.modifyGift)
       .then((res) => {
         this.$message.success("礼包修改成功");
-        this.clearForm("modifyGift");
+          this.dialogFormVisible2 = false
+    this.$refs['modifyGift']&&(this.$refs['modifyGift'] as any).resetFields();
         this.getGiftList(true);
       })
       .catch(() => {})
@@ -311,11 +322,6 @@ export default class extends Vue {
   handleCurrentChange(current: number) {
     this.page.pn = current;
     this.getGiftList();
-  }
-  clearForm(name: String) {
-    this.$refs[name].resetFields();
-    this.dialogFormVisible = false;
-    this.dialogFormVisible2 = false;
   }
 }
 </script>

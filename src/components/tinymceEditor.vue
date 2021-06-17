@@ -30,8 +30,8 @@ import "tinymce/plugins/preview";
   },
 })
 export default class extends Vue {
-  @Prop({ default: "" }) tinymceHtml?: String;
-  value = this.tinymceHtml;
+  @Prop({ default: "" }) tinymceHtml!: String;
+  value:String = '';
   plugins =
     "preview fullscreen link lists image media table textcolor wordcount contextmenu ";
   toolbar =
@@ -49,13 +49,18 @@ export default class extends Vue {
     toolbar: this.toolbar,
     menubar: false,
     plugins: this.plugins,
-    images_upload_handler: function (blobInfo:any, success:Function, fail:Function) {
+    images_upload_handler: function (
+      blobInfo: any,
+      success: Function,
+      fail: Function
+    ) {
       let file = blobInfo.blob(); //转化为易于理解的file对象
       let imageForm = new FormData();
       imageForm.append("file", file);
       imageUploadApi(imageForm)
         .then((res) => {
-          success(picUrlFormat( res.data.path));
+          // success(res.data.path);
+          success(picUrlFormat(res.data.path));
         })
         .catch((e) => {
           fail(e);
@@ -63,21 +68,26 @@ export default class extends Vue {
     },
     file_picker_types: " media",
     media_live_embeds: true,
-    file_picker_callback: function (callback:Function, value:Object, meta:Object) {
+    file_picker_callback: function (
+      callback: Function,
+      value: Object,
+      meta: any
+    ) {
       if (meta.filetype == "media") {
         // callback(this.uploadVideo());
         //模拟出一个input用于添加本地文件
-        let input = document.createElement("input");
+        let input = document && document.createElement("input");
         input.setAttribute("type", "file");
         input.setAttribute("accept", "video/*");
         input.click();
-        input.onchange = function () {
-          let file = this.files[0];
+        input.onchange = function (e: any) {
+          console.log('eeeeeeeeee',e)
+          let file = e.target.files[0];
           let videoFrom = new FormData();
           videoFrom.append("file", file);
           videoUploadApi(videoFrom)
             .then((res) => {
-              callback(picUrlFormat( res.data.path));
+              callback(picUrlFormat(res.data.path));
             })
             .catch((e) => {
               callback(e);
@@ -85,7 +95,7 @@ export default class extends Vue {
         };
       }
     },
-    media_url_resolver: function (data:Object, resolve:Function) {
+    media_url_resolver: function (data: any, resolve: Function) {
       try {
         let embedHtml = `<p>
                  <span
@@ -109,8 +119,11 @@ export default class extends Vue {
   };
 
   mounted() {
+    console.log('999999999999999',this.tinymceHtml)
+    this.value =  this.tinymceHtml;
     tinymce.init({});
   }
+
   @Watch("tinymceHtml")
   getTinymceHtml(newValue: any) {
     this.value = newValue;

@@ -23,6 +23,7 @@
     </el-row>
     <el-table
       :data="tableData"
+      v-loading="isLoading"
       stripe
       border
       style="width: 100%; margin-top: 15px"
@@ -124,7 +125,7 @@
           ></image-upload>
         </el-form-item>
         <el-form-item>
-          <el-button @click="clearForm('newSliceShow')" :disabled="submiting"
+          <el-button @click="dialogFormVisible = false" :disabled="submiting"
             >取消</el-button
           >
           <el-button type="primary" :loading="submiting" @click="submitAdd()"
@@ -171,7 +172,7 @@
           ></image-upload>
         </el-form-item>
         <el-form-item>
-          <el-button @click="clearForm('modifySliceShow')" :disabled="submiting"
+          <el-button @click="dialogFormVisible2 = false" :disabled="submiting"
             >取消</el-button
           >
           <el-button type="primary" :loading="submiting" @click="submitModify()"
@@ -257,6 +258,14 @@ export default class extends Vue {
   mounted() {
     this.getSliceShowList(true);
   }
+    showNewDialog(){
+    this.dialogFormVisible = true
+    this.$refs['newSliceShow']&&(this.$refs['newSliceShow'] as any).resetFields();
+  }
+    showModifyDialog(){
+    this.dialogFormVisible2 = true
+    this.$refs['modifySliceShow']&&(this.$refs['modifySliceShow'] as any).resetFields();
+  }
   async getSliceShowList(isFirst?: boolean, isSerach?: Boolean) {
     if (this.isLoading) return;
     this.isLoading = true;
@@ -304,7 +313,8 @@ export default class extends Vue {
     sliceShowAddApi(this.newSliceShow)
       .then((res) => {
         this.$message.success("新增轮播图成功");
-        this.clearForm("newSliceShow");
+          this.$refs['newSliceShow']&&(this.$refs['newSliceShow'] as any).resetFields();
+          this.dialogFormVisible=false
         this.getSliceShowList(true);
       })
       .catch(() => {})
@@ -325,7 +335,8 @@ export default class extends Vue {
       sliceShowUpdateApi(this.modifySliceShow)
         .then((res) => {
           this.$message.success("轮播图修改成功");
-          this.clearForm("modifySliceShow");
+              this.dialogFormVisible2 = false
+    this.$refs['modifySliceShow']&&(this.$refs['modifySliceShow'] as any).resetFields();
           this.getSliceShowList(true);
         })
         .catch(() => {})
@@ -343,11 +354,6 @@ export default class extends Vue {
   handleCurrentChange(current: number) {
     this.page.pn = current;
     this.getSliceShowList();
-  }
-  clearForm(name: String) {
-    this.$refs[name].resetFields();
-    this.dialogFormVisible = false;
-    this.dialogFormVisible2 = false;
   }
 }
 </script>

@@ -18,7 +18,7 @@
         >
       </el-col>
     </el-row>
-    <el-table :data="tableData" stripe border style="margin-top: 20px">
+    <el-table :data="tableData" v-loading="isLoading" stripe border style="margin-top: 20px">
       <!-- <el-table-column prop="id" label="ID" align="center"> </el-table-column> -->
       <el-table-column
         prop="username"

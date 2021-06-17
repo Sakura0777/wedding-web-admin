@@ -34,6 +34,7 @@
     </el-row>
     <el-table
       :data="tableData"
+      v-loading="isLoading"
       stripe
       border
       style="width: 95%; margin-top: 20px"
@@ -169,6 +170,7 @@
         >
       </el-row>
       <tinymce-editor
+        v-if="dialogFormVisible"
         class="editor"
         ref="tinymceEditor"
         :tinymceHtml="newArticle.content"
@@ -228,8 +230,9 @@
         >
       </el-row>
       <tinymce-editor
+        v-if="dialogFormVisible2"
         class="editor"
-        ref="tinymceEditor"
+        ref="tinymceEditor2"
         :tinymceHtml="modifyArticle.content"
         @input="(e) => (modifyArticle.content = e)"
       ></tinymce-editor>
@@ -362,6 +365,15 @@ export default class extends Vue {
   mounted() {
     this.getArticleList(true);
   }
+    showNewDialog(){
+    this.newArticle.content = ''
+    this.dialogFormVisible = true
+    this.$refs['newArticle']&&(this.$refs['newArticle'] as any).resetFields();
+  }
+    showModifyDialog(){
+    this.dialogFormVisible2 = true
+    this.$refs['modifyArticle']&&(this.$refs['modifyArticle'] as any).resetFields();
+  }
   async getArticleList(isFirst?: boolean, isSerach?: Boolean) {
     if (this.isLoading) return;
     this.isLoading = true;
@@ -432,11 +444,14 @@ export default class extends Vue {
       return this.$message.error("请输入文章内容");
     }
     if (this.submiting) return;
+    (this.newArticle.content as string).replace(this.picUrlFormat.toString(),'')
     this.submiting = true;
     articleAddApi(this.newArticle)
       .then((res) => {
         this.$message.success("新增文章成功");
-        this.clearForm("newArticle");
+        this.dialogFormVisible = false
+        this.newArticle.content = ''
+        this.$refs['newArticle']&&(this.$refs['newArticle'] as any).resetFields();
         this.getArticleList(true);
       })
       .catch(() => {})
@@ -451,7 +466,7 @@ export default class extends Vue {
     if (this.modifyArticle.cover_photo === "") {
       return this.$message.error("请先上传封面图片");
     }
-    if (this.newArticle.content === "") {
+    if (this.modifyArticle.content === "") {
       return this.$message.error("请输入文章内容");
     }
     if (this.submiting) return;
@@ -459,7 +474,8 @@ export default class extends Vue {
     articleUpdateApi(this.modifyArticle)
       .then((res) => {
         this.$message.success("文章修改成功");
-        this.clearForm("modifyArticle");
+            this.dialogFormVisible = false
+    this.$refs['modifyArticle']&&(this.$refs['modifyArticle'] as any).resetFields();
         this.getArticleList(true);
       })
       .catch(() => {})
@@ -475,11 +491,6 @@ export default class extends Vue {
   handleCurrentChange(current: number) {
     this.page.pn = current;
     this.getArticleList();
-  }
-  clearForm(name: String) {
-    this.dialogFormVisible = false;
-    this.dialogFormVisible2 = false;
-    this.$refs[name].resetFields();
   }
 }
 </script>
