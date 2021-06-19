@@ -56,7 +56,7 @@
           <el-button
             type="text"
             style="color: #e83929"
-            @click="messageDelete(scope.row.uid)"
+            @click="messageDelete(scope.row.id)"
             >删除</el-button
           >
         </template>
@@ -111,15 +111,16 @@ export default class extends Vue {
     this.tableData = res.data.list;
     this.isLoading = false;
   }
-  messageDelete(uid: String) {
+  messageDelete(id: String) {
     this.$confirm("确定删除该留言吗？", "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
     })
       .then(async () => {
-        let res = await messageDeleteApi({ uid: uid });
+        let res = await messageDeleteApi({ id: id });
         this.$message.success("留言已删除");
+         this.getMessageList(true);
       })
       .catch(() => {
         return;
