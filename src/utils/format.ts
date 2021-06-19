@@ -43,7 +43,7 @@ export const arr2obj = (list: any[]) => {
 
 export const picUrlFormat = (url?: string) => {
   if (!url) {
-    return baseImgUrl;
+    return ;
   }
   let out = url;
   if (url.indexOf("//") < 0) {

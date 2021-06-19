@@ -5,6 +5,7 @@
 </template>
 
 <script lang="ts">
+import { Loading } from 'element-ui';
 import { Component, Prop, Watch, Vue } from "vue-property-decorator";
 import { imageUploadApi, videoUploadApi } from "@/api/api";
 import { picUrlFormat } from "@/utils/format";
@@ -55,11 +56,12 @@ export default class extends Vue {
       fail: Function
     ) {
       let file = blobInfo.blob(); //转化为易于理解的file对象
+      let loadingInstance = Loading.service({ target:document.getElementsByClassName('tox-dialog')[0] });
       let imageForm = new FormData();
       imageForm.append("file", file);
       imageUploadApi(imageForm)
         .then((res) => {
-          // success(res.data.path);
+          loadingInstance.close();
           success(picUrlFormat(res.data.path));
         })
         .catch((e) => {
@@ -73,6 +75,7 @@ export default class extends Vue {
       value: Object,
       meta: any
     ) {
+      console.log('^^^^^^^^^^^^^',meta)
       if (meta.filetype == "media") {
         // callback(this.uploadVideo());
         //模拟出一个input用于添加本地文件
@@ -81,12 +84,13 @@ export default class extends Vue {
         input.setAttribute("accept", "video/*");
         input.click();
         input.onchange = function (e: any) {
-          console.log('eeeeeeeeee',e)
           let file = e.target.files[0];
+            let loadingInstance = Loading.service({ target:document.getElementsByClassName('tox-dialog')[0] });
           let videoFrom = new FormData();
           videoFrom.append("file", file);
           videoUploadApi(videoFrom)
             .then((res) => {
+              loadingInstance.close();
               callback(picUrlFormat(res.data.path));
             })
             .catch((e) => {
@@ -96,7 +100,7 @@ export default class extends Vue {
       }
     },
     media_url_resolver: function (data: any, resolve: Function) {
-      try {
+      // try {
         let embedHtml = `<p>
                  <span
                 data-mce-selected="1"
@@ -111,26 +115,29 @@ export default class extends Vue {
               </span>
                 </p>
                 <p style="text-align: left;"></p>`;
-        resolve({ html: embedHtml });
-      } catch (e) {
-        resolve({ html: "" });
-      }
+        console.log('@@@@@@@@@@@@',data)
+        resolve({ html: embedHtml || '' });
+        embedHtml = ''
+      // } catch (e) {
+      //   resolve({ html: "" });
+      // }
     },
   };
 
   mounted() {
-    console.log('999999999999999',this.tinymceHtml)
     this.value =  this.tinymceHtml;
     tinymce.init({});
   }
 
-  @Watch("tinymceHtml")
-  getTinymceHtml(newValue: any) {
-    this.value = newValue;
-  }
+  // @Watch("tinymceHtml")
+  // getTinymceHtml(newValue: any) {
+  //   this.value = newValue;
+  // }
   @Watch("value")
   sendValue() {
     this.$emit("input", this.value);
   }
 }
 </script>
+<style lang="scss" scoped>
+</style>

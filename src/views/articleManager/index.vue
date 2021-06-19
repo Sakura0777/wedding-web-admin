@@ -153,7 +153,11 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="文章封面" prop="cover_photo" v-if="newArticle.article_type!==6">
+        <el-form-item
+          label="文章封面"
+          prop="cover_photo"
+          v-if="newArticle.article_type !== 6"
+        >
           <image-upload
             :imageSrc="newArticle.cover_photo"
             @change="(e) => (newArticle.cover_photo = e)"
@@ -169,12 +173,12 @@
           >保存</el-button
         >
       </el-row>
+      <!-- :tinymceHtml="newArticle.content" -->
       <tinymce-editor
         v-if="dialogFormVisible"
         class="editor"
         ref="tinymceEditor"
-        :tinymceHtml="newArticle.content"
-        @input="(e) => (newArticle.content = e)"
+        @input="watchChange"
       ></tinymce-editor>
     </el-dialog>
     <el-dialog
@@ -213,7 +217,11 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="文章封面" prop="cover_photo" v-if="modifyArticle.article_type!==6">
+        <el-form-item
+          label="文章封面"
+          prop="cover_photo"
+          v-if="modifyArticle.article_type !== 6"
+        >
           <image-upload
             :imageSrc="modifyArticle.cover_photo"
             @change="(e) => (modifyArticle.cover_photo = e)"
@@ -245,7 +253,7 @@ import { Component, Vue } from "vue-property-decorator";
 import tinymceEditor from "../../components/tinymceEditor.vue";
 import imageUpload from "../../components/imageUpload.vue";
 import { timeFormat, picUrlFormat } from "@/utils/format";
-
+import { baseImgUrl } from "@/api/apiConfig";
 import {
   articleListApi,
   articleDeleteApi,
@@ -374,6 +382,10 @@ export default class extends Vue {
   mounted() {
     this.getArticleList(true);
   }
+  watchChange(e){
+    console.log('eeeeeeeeeee',e)
+   this.newArticle.content = e
+  }
     showNewDialog(){
     this.newArticle.content = ''
     this.dialogFormVisible = true
@@ -452,8 +464,7 @@ export default class extends Vue {
     if (this.newArticle.content === "") {
       return this.$message.error("请输入文章内容");
     }
-    if (this.submiting) return;
-    (this.newArticle.content as string).replace(this.picUrlFormat.toString(),'')
+    if (this.submiting) return
     this.submiting = true;
     articleAddApi(this.newArticle)
       .then((res) => {
@@ -479,7 +490,7 @@ export default class extends Vue {
       return this.$message.error("请输入文章内容");
     }
     if (this.submiting) return;
-    (this.modifyArticle.content as string).replace(this.picUrlFormat.toString(),'')
+    this.modifyArticle.content.replace(new RegExp(baseImgUrl, "g"),'')
     this.submiting = true;
     articleUpdateApi(this.modifyArticle)
       .then((res) => {

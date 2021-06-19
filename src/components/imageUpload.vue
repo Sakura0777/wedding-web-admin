@@ -34,6 +34,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { imageUploadApi } from "@/api/api";
 import { picUrlFormat } from "@/utils/format";
+import { Loading } from 'element-ui';
 @Component({
   name: "imageUpload",
   components: {},
@@ -50,9 +51,11 @@ export default class extends Vue {
     if (!isLt10M) {
       return this.$message.error("上传头像图片大小不能超过 10MB!");
     }
+    let loadingInstance = Loading.service({ fullscreen: true });
     let imageForm = new FormData();
     imageForm.append("file", file);
     let res = await imageUploadApi(imageForm);
+    loadingInstance.close();
     this.$emit("change", res.data.path);
   }
 }
