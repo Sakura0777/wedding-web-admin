@@ -253,7 +253,6 @@ import { Component, Vue } from "vue-property-decorator";
 import tinymceEditor from "../../components/tinymceEditor.vue";
 import imageUpload from "../../components/imageUpload.vue";
 import { timeFormat, picUrlFormat } from "@/utils/format";
-import { baseImgUrl } from "@/api/apiConfig";
 import {
   articleListApi,
   articleDeleteApi,
@@ -465,6 +464,9 @@ export default class extends Vue {
       return this.$message.error("请输入文章内容");
     }
     if (this.submiting) return
+
+   
+
     this.submiting = true;
     articleAddApi(this.newArticle)
       .then((res) => {
@@ -490,7 +492,6 @@ export default class extends Vue {
       return this.$message.error("请输入文章内容");
     }
     if (this.submiting) return;
-    this.modifyArticle.content.replace(new RegExp(baseImgUrl, "g"),'')
     this.submiting = true;
     articleUpdateApi(this.modifyArticle)
       .then((res) => {

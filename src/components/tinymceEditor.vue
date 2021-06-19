@@ -5,6 +5,7 @@
 </template>
 
 <script lang="ts">
+import { baseImgUrl } from "@/api/apiConfig";
 import { Loading } from 'element-ui';
 import { Component, Prop, Watch, Vue } from "vue-property-decorator";
 import { imageUploadApi, videoUploadApi } from "@/api/api";
@@ -68,7 +69,7 @@ export default class extends Vue {
           fail(e);
         });
     },
-    file_picker_types: " media",
+    file_picker_types: "media",
     media_live_embeds: true,
     file_picker_callback: function (
       callback: Function,
@@ -125,17 +126,25 @@ export default class extends Vue {
   };
 
   mounted() {
-    this.value =  this.tinymceHtml;
+    console.log('this.tinymceHtml',this.tinymceHtml)
+    if(this.tinymceHtml !== ''){
+      let str1 = '/storage/video'
+      let str2 = '/storage/images'
+      let  sendData=this.tinymceHtml.replace(new RegExp(str1, "g"), baseImgUrl.substr(1)+str1)
+       sendData=sendData.replace(new RegExp(str2, "g"), baseImgUrl.substr(1)+str2)
+       console.log('sendData',sendData)
+    this.value =  sendData;
+    } 
     tinymce.init({});
   }
 
-  // @Watch("tinymceHtml")
-  // getTinymceHtml(newValue: any) {
-  //   this.value = newValue;
-  // }
   @Watch("value")
   sendValue() {
-    this.$emit("input", this.value);
+    console.log('5555555555',this.value)
+    let sendData=this.value.replace(new RegExp(baseImgUrl, "g"),'')
+    sendData=sendData.replace(new RegExp(baseImgUrl.substr(1), "g"),'')
+    console.log('sendData',sendData)
+    this.$emit("input", sendData);
   }
 }
 </script>
