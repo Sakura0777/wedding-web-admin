@@ -23,19 +23,19 @@
       border
       style="margin-top: 20px"
     >
-      <el-table-column prop="ID" label="ID" align="center"> </el-table-column>
+      <!-- <el-table-column prop="ID" label="ID" align="center"> </el-table-column> -->
       <el-table-column
         prop="account"
         label="留言用户"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="account"
+        prop="username"
         label="姓名"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="account"
+        prop="phone"
         label="联系方式"
         align="center"
       ></el-table-column>
@@ -45,9 +45,11 @@
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="add_time"
         label="留言时间"
         align="center"
+        :formatter="
+          (row) => timeFormat(row.add_time * 1000, 'yyyy-MM-dd hh:mm')
+        "
       ></el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
@@ -77,6 +79,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import { timeFormat } from "@/utils/format";
 import { messageListApi, messageDeleteApi } from "@/api/api";
 @Component({
   name: "index",
@@ -94,6 +97,7 @@ export default class extends Vue {
   mounted() {
     this.getMessageList(true);
   }
+  timeFormat = timeFormat;
   async getMessageList(isFirst?: boolean, isSerach?: Boolean) {
     if (this.isLoading) return;
     this.isLoading = true;
