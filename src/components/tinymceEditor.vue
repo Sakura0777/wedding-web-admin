@@ -25,6 +25,8 @@ import "tinymce/plugins/colorpicker";
 import "tinymce/plugins/textcolor";
 import "tinymce/plugins/fullscreen";
 import "tinymce/plugins/preview";
+import "tinymce/plugins/emoticons";
+import "tinymce/plugins/charmap";
 @Component({
   name: "tinymceEditor",
   components: {
@@ -35,15 +37,16 @@ export default class extends Vue {
   @Prop({ default: "" }) tinymceHtml!: String;
   value:String = '';
   plugins =
-    "preview fullscreen link lists image media table textcolor wordcount contextmenu ";
+    "charmap preview fullscreen link lists image media table textcolor wordcount contextmenu emoticons ";
   toolbar =
-    "undo redo | formatselect bold italic forecolor removeformat |alignleft aligncenter alignright alignjustify | bullist numlist outdent indent  |table image media  link|  preview fullscreen";
+    "undo redo | formatselect bold italic forecolor removeformat |alignleft aligncenter alignright alignjustify | bullist numlist outdent indent  |emoticons charmap table | image media  link|  preview fullscreen";
   init = {
     // selector: "#tinymce",
     language_url: "tinymce/langs/zh_CN.js", //语言包的路径
     language: "zh_CN", //语言
     content_css: "tinymce/skins/content/default/content.css",
     skin_url: "tinymce/skins/ui/oxide", //skin路径
+    emoticons_database_url: 'tinymce/emoticons/js/emojis.js',
     width: 1000,
     height: 680, //编辑器高度
     branding: true, //是
@@ -57,12 +60,12 @@ export default class extends Vue {
       fail: Function
     ) {
       let file = blobInfo.blob(); //转化为易于理解的file对象
-      let loadingInstance = Loading.service({ target:document.getElementsByClassName('tox-dialog')[0] });
+      // let loadingInstance = Loading.service({ target:Object=document.getElementsByClassName('tox-dialog')[0] });
       let imageForm = new FormData();
       imageForm.append("file", file);
       imageUploadApi(imageForm)
         .then((res) => {
-          loadingInstance.close();
+          // loadingInstance.close();
           success(picUrlFormat(res.data.path));
         })
         .catch((e) => {
@@ -86,12 +89,12 @@ export default class extends Vue {
         input.click();
         input.onchange = function (e: any) {
           let file = e.target.files[0];
-            let loadingInstance = Loading.service({ target:document.getElementsByClassName('tox-dialog')[0] });
+            // let loadingInstance = Loading.service({ target:Object=document.getElementsByClassName('tox-dialog')[0] });
           let videoFrom = new FormData();
           videoFrom.append("file", file);
           videoUploadApi(videoFrom)
             .then((res) => {
-              loadingInstance.close();
+              // loadingInstance.close();
               callback(picUrlFormat(res.data.path));
             })
             .catch((e) => {
@@ -102,7 +105,7 @@ export default class extends Vue {
     },
     media_url_resolver: function (data: any, resolve: Function) {
       // try {
-        let embedHtml = `<p>
+        let embedHtml = `
                  <span
                 data-mce-selected="1"
                 data-mce-object="video"
@@ -113,9 +116,7 @@ export default class extends Vue {
                 data-mce-p-src=${data.url} >
                 <video src=${data.url} width="100%" height="100%" controls="controls" controlslist="nodownload">
                 </video>
-              </span>
-                </p>
-                <p style="text-align: left;"></p>`;
+              </span>`;
         console.log('@@@@@@@@@@@@',data)
         resolve({ html: embedHtml || '' });
         embedHtml = ''

@@ -381,7 +381,7 @@ export default class extends Vue {
   mounted() {
     this.getArticleList(true);
   }
-  watchChange(e){
+  watchChange(e:String){
     console.log('eeeeeeeeeee',e)
    this.newArticle.content = e
   }
@@ -496,7 +496,7 @@ export default class extends Vue {
     articleUpdateApi(this.modifyArticle)
       .then((res) => {
         this.$message.success("文章修改成功");
-            this.dialogFormVisible = false
+            this.dialogFormVisible2 = false
     this.$refs['modifyArticle']&&(this.$refs['modifyArticle'] as any).resetFields();
         this.getArticleList(true);
       })
