@@ -16,9 +16,7 @@
         >
       </el-col>
       <el-col :span="2">
-        <el-button type="primary" plain @click="dialogFormVisible = true"
-          >添加</el-button
-        >
+        <el-button type="primary" plain @click="showNewDialog">添加</el-button>
       </el-col>
     </el-row>
     <el-table
@@ -259,12 +257,14 @@ export default class extends Vue {
     this.getSliceShowList(true);
   }
     showNewDialog(){
-    this.dialogFormVisible = true
-    this.$refs['newSliceShow']&&(this.$refs['newSliceShow'] as any).resetFields();
+    this.newSliceShow={
+    title: "",
+    photo: "",
+    sort: 0,
+    jump_url: "",
   }
-    showModifyDialog(){
-    this.dialogFormVisible2 = true
-    this.$refs['modifySliceShow']&&(this.$refs['modifySliceShow'] as any).resetFields();
+    this.$refs['newSliceShow']&&(this.$refs['newSliceShow'] as any).resetFields();
+     this.dialogFormVisible = true
   }
   async getSliceShowList(isFirst?: boolean, isSerach?: Boolean) {
     if (this.isLoading) return;
@@ -299,6 +299,7 @@ export default class extends Vue {
       });
   }
   modifyBtn(item: Object) {
+    this.$refs['modifySliceShow']&&(this.$refs['modifySliceShow'] as any).resetFields();
     this.modifySliceShow = item;
     this.dialogFormVisible2 = true;
   }

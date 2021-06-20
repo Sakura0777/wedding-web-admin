@@ -38,8 +38,11 @@ export default class extends Vue {
   value:String = '';
   plugins =
     "charmap preview fullscreen link lists image media table textcolor wordcount contextmenu emoticons ";
-  toolbar =
-    "undo redo | formatselect bold italic forecolor removeformat |alignleft aligncenter alignright alignjustify | bullist numlist outdent indent  |emoticons charmap table | image media  link|  preview fullscreen";
+  toolbar1 =
+    "undo redo | formatselect bold italic removeformat | fontsizeselect fontselect forecolor |alignleft aligncenter alignright alignjustify | bullist numlist outdent indent ";
+      toolbar2 =
+    "emoticons charmap table | image media  link|  preview fullscreen";
+
   init = {
     // selector: "#tinymce",
     language_url: "tinymce/langs/zh_CN.js", //语言包的路径
@@ -51,9 +54,14 @@ export default class extends Vue {
     height: 680, //编辑器高度
     branding: true, //是
     placeholder: "请在这里输入文章内容",
-    toolbar: this.toolbar,
+    toolbar1: this.toolbar1,
+    toolbar2: this.toolbar2,
     menubar: false,
+    toolbar_sticky:true,
     plugins: this.plugins,
+    fontsize_formats: "8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt 48pt",
+    font_formats: '微软雅黑=Microsoft YaHei;苹果苹方=PingFang SC;宋体=simsun;Helvetica Neue;sans-serif;serif',
+    lineheight_formats: '1 1.2 1.5 1.6 1.8 2 2.4',
     images_upload_handler: function (
       blobInfo: any,
       success: Function,

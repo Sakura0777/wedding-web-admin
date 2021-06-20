@@ -39,7 +39,7 @@
         align="center"
       ></el-table-column>
       <el-table-column
-        :formatter="(row) => (statusList[row.flag])"
+        :formatter="(row) => statusList[row.flag]"
         label="状态"
         align="center"
       ></el-table-column>
@@ -303,8 +303,9 @@ export default class extends Vue {
         userUpdateApi(data)
           .then(res => {
             this.$message.success("用户密码修改成功");
-            this.$refs['updateUser']&&(this.$refs['updateUser'] as any).resetFields();
             this.dialogFormVisible = false
+            this.$refs['updateUser']&&(this.$refs['updateUser'] as any).resetFields();
+
           })
           .catch(() => {})
           .finally(() => {

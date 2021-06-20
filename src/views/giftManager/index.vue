@@ -2,9 +2,7 @@
   <div>
     <el-row :gutter="20" style="margin-top: 30px">
       <el-col :span="24" align="right">
-        <el-button type="primary" plain @click="dialogFormVisible = true"
-          >添加</el-button
-        >
+        <el-button type="primary" plain @click="showNewDialog">添加</el-button>
       </el-col>
     </el-row>
     <el-table
@@ -210,10 +208,6 @@ export default class extends Vue {
       showNewDialog(){
     this.dialogFormVisible = true
     this.$refs['newGift']&&(this.$refs['newGift'] as any).resetFields();
-  }
-    showModifyDialog(){
-    this.dialogFormVisible2 = true
-    this.$refs['modifyGift']&&(this.$refs['modifyGift'] as any).resetFields();
   }
   async getGiftList(isFirst?: boolean, isSerach?: Boolean) {
     if (this.isLoading) return;

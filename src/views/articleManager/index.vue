@@ -27,9 +27,7 @@
         >
       </el-col>
       <el-col :span="2">
-        <el-button type="primary" plain @click="dialogFormVisible = true"
-          >添加</el-button
-        >
+        <el-button type="primary" plain @click="showNewDialog">添加</el-button>
       </el-col>
     </el-row>
     <el-table
@@ -47,6 +45,7 @@
       <el-table-column prop="imgSrc" label="封面" align="center">
         <template slot-scope="scope">
           <el-image
+          v-if="scope.row.article_type !== 6"
             style="width: 60px; height: 60px"
             :src="picUrlFormat(scope.row.cover_photo)"
             :preview-src-list="[picUrlFormat(scope.row.cover_photo)]"
@@ -386,14 +385,17 @@ export default class extends Vue {
    this.newArticle.content = e
   }
     showNewDialog(){
-    this.newArticle.content = ''
+    // this.newArticle.content = ''
+    this.newArticle = {
+    title: "",
+    cover_photo: "",
+    article_type: 0,
+    content: "",
+  };
     this.dialogFormVisible = true
     this.$refs['newArticle']&&(this.$refs['newArticle'] as any).resetFields();
   }
-    showModifyDialog(){
-    this.dialogFormVisible2 = true
-    this.$refs['modifyArticle']&&(this.$refs['modifyArticle'] as any).resetFields();
-  }
+
   async getArticleList(isFirst?: boolean, isSerach?: Boolean) {
     if (this.isLoading) return;
     this.isLoading = true;
@@ -450,6 +452,7 @@ export default class extends Vue {
       });
   }
   modifyArticleInfo(item: Object) {
+    this.$refs['modifyArticle']&&(this.$refs['modifyArticle'] as any).resetFields();
     this.modifyArticle = item;
     this.dialogFormVisible2 = true;
   }
