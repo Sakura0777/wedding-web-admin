@@ -52,7 +52,7 @@
           :placeholder="'请输入图形验证码'"
           name="verifyCode"
         />
-        <img :src="vcodeUrl" alt="" class="show-pwd" style="top:2px;right:2px;"/>
+        <img :src="vcodeUrl" @click="getVerifyCode" alt="" class="show-pwd" style="top:2px;right:2px;"/>
       </el-form-item>
 
       <el-button

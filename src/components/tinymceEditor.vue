@@ -27,6 +27,7 @@ import "tinymce/plugins/fullscreen";
 import "tinymce/plugins/preview";
 import "tinymce/plugins/emoticons";
 import "tinymce/plugins/charmap";
+// import "tinymce/plugins/tablesplitcells";
 @Component({
   name: "tinymceEditor",
   components: {
@@ -37,11 +38,11 @@ export default class extends Vue {
   @Prop({ default: "" }) tinymceHtml!: String;
   value:String = '';
   plugins =
-    "charmap preview fullscreen link lists image media table textcolor wordcount contextmenu emoticons ";
+    "lineheight charmap preview fullscreen link lists image media table  tablesplitcells tablemergecells textcolor wordcount contextmenu emoticons ";
   toolbar1 =
-    "undo redo | formatselect bold italic removeformat | fontsizeselect fontselect forecolor |alignleft aligncenter alignright alignjustify | bullist numlist outdent indent ";
+    "undo redo | formatselect bold italic removeformat | fontsizeselect fontselect lineheight forecolor |alignleft aligncenter alignright alignjustify | bullist numlist outdent indent ";
       toolbar2 =
-    "emoticons charmap table | image media  link|  preview fullscreen";
+    " charmap table | image media  link|  preview fullscreen";
 
   init = {
     // selector: "#tinymce",
@@ -59,9 +60,11 @@ export default class extends Vue {
     menubar: false,
     toolbar_sticky:true,
     plugins: this.plugins,
-    fontsize_formats: "8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt 48pt",
+    fontsize_formats: "10pt 12pt 14pt 16pt 18pt 24pt 36pt 48pt",
     font_formats: '微软雅黑=Microsoft YaHei;苹果苹方=PingFang SC;宋体=simsun;Helvetica Neue;sans-serif;serif',
     lineheight_formats: '1 1.2 1.5 1.6 1.8 2 2.4',
+    convert_fonts_to_spans : false,
+    extended_valid_elements: "span",
     images_upload_handler: function (
       blobInfo: any,
       success: Function,
@@ -137,11 +140,13 @@ export default class extends Vue {
   mounted() {
     console.log('this.tinymceHtml',this.tinymceHtml)
     if(this.tinymceHtml !== ''){
+      console.log(this.tinymceHtml)
       let str1 = '/storage/video'
       let str2 = '/storage/images'
-      let  sendData=this.tinymceHtml.replace(new RegExp(str1, "g"), baseImgUrl.substr(1)+str1)
-       sendData=sendData.replace(new RegExp(str2, "g"), baseImgUrl.substr(1)+str2)
-       console.log('sendData',sendData)
+      let sendData=this.tinymceHtml.replace(new RegExp('http:', "g"),'')
+      sendData=sendData.replace(new RegExp(str1, "g"), baseImgUrl.substr(1)+str1)
+      sendData=sendData.replace(new RegExp(str2, "g"), baseImgUrl.substr(1)+str2)
+      console.log('sendData',sendData)
     this.value =  sendData;
     } 
     tinymce.init({});
@@ -152,6 +157,7 @@ export default class extends Vue {
     console.log('5555555555',this.value)
     let sendData=this.value.replace(new RegExp(baseImgUrl, "g"),'')
     sendData=sendData.replace(new RegExp(baseImgUrl.substr(1), "g"),'')
+    sendData=sendData.replace(new RegExp('//', "g"),'/')
     console.log('sendData',sendData)
     this.$emit("input", sendData);
   }
