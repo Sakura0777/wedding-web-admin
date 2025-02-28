@@ -95,6 +95,7 @@ export default class extends Vue {
     total: 0,
   };
   mounted() {
+    //git push test
     this.getMessageList(true);
   }
   timeFormat = timeFormat;
